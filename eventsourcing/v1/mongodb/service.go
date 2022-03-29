@@ -20,7 +20,7 @@ type Service struct {
 }
 
 // NewMongoEventSourcing 创建
-func NewMongoEventSourcing(logger logger.Logger) es.EventSourcing {
+func NewMongoEventSourcing(logger logger.Logger) es.EventSourcingService {
 	return &Service{logger: logger, mongodb: NewMongoDB(logger)}
 }
 
@@ -90,6 +90,59 @@ func (c *Service) SaveSnapshot(ctx *fasthttp.RequestCtx, req *es.SaveSnapshotReq
 		return nil, newError("save(). error saving snapshot.", err)
 	}
 	return &es.SaveSnapshotResponse{}, nil
+}
+
+func (c *Service) CreateEventLog(reqCtx *fasthttp.RequestCtx, req *es.CreateEventLogRequest) (*es.CreateEventLogResponse, error) {
+	log := &model.EventLog{
+		TenantId:  req.TenantId,
+		PubAppId:  req.PubAppId,
+		SubAppId:  req.SubAppId,
+		EventId:   req.EventId,
+		CommandId: req.CommandId,
+		Status:    req.Status,
+		Message:   req.Message,
+	}
+	err := c.mongodb.eventLogService.Insert(reqCtx, log)
+	if err != nil {
+		return nil, err
+	}
+	return &es.CreateEventLogResponse{}, nil
+}
+
+func (c *Service) UpdateEventLog(reqCtx *fasthttp.RequestCtx, req *es.UpdateEventLogRequest) (*es.UpdateEventLogResponse, error) {
+	log := &model.EventLog{
+		TenantId:  req.TenantId,
+		PubAppId:  req.PubAppId,
+		SubAppId:  req.SubAppId,
+		EventId:   req.EventId,
+		CommandId: req.CommandId,
+		Status:    req.Status,
+		Message:   req.Message,
+	}
+	err := c.mongodb.eventLogService.Update(reqCtx, log)
+	if err != nil {
+		return nil, err
+	}
+	return &es.UpdateEventLogResponse{}, nil
+}
+
+func (c *Service) GetEventLogByCommandId(reqCtx *fasthttp.RequestCtx, req *es.GetEventLogByCommandIdRequest) (*es.GetEventLogByCommandIdResponse, error) {
+	tenantId := req.TenantId
+	subAppId := req.SubAppId
+	commandId := req.CommandId
+	eventLog, err := c.mongodb.eventLogService.FindById(reqCtx, tenantId, subAppId, commandId)
+	if err != nil {
+		return nil, err
+	}
+	return &es.GetEventLogByCommandIdResponse{
+		TenantId:  eventLog.TenantId,
+		SubAppId:  eventLog.SubAppId,
+		PubAppId:  eventLog.PubAppId,
+		EventId:   eventLog.EventId,
+		CommandId: eventLog.CommandId,
+		Status:    eventLog.Status,
+		Message:   eventLog.Message,
+	}, nil
 }
 
 func (c *Service) updatePublishStateOk(tenantId string, eventId string) error {

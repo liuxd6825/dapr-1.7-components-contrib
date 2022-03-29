@@ -75,3 +75,19 @@ type SaveSnapshotResponse struct {
 type ExistAggregateResponse struct {
 	IsExist bool `json:"isExist"`
 }
+
+type CreateEventLogResponse struct {
+}
+
+type UpdateEventLogResponse struct {
+}
+
+type GetEventLogByCommandIdResponse struct {
+	TenantId  string `json:"tenantId"`
+	PubAppId  string `json:"pubAppId"`
+	SubAppId  string `json:"subAppId"`
+	EventId   string `json:"eventId"`
+	CommandId string `json:"commandId"`
+	Status    bool   `json:"status"`
+	Message   string `json:"message"`
+}

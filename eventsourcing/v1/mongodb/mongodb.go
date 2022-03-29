@@ -76,6 +76,7 @@ type MongoDB struct {
 	eventService     service.EventService
 	snapshotService  service.SnapshotService
 	aggregateService service.AggregateService
+	eventLogService  service.EventLogService
 }
 
 type mongoDBMetadata struct {
