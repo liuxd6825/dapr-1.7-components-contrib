@@ -1,26 +1,9 @@
-/*
-Copyright 2021 The Dapr Authors
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
-package mongodb
-
-// mongodb package is an implementation of StateStore interface to perform operations on store
+package common
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	es "github.com/dapr/components-contrib/eventsourcing/v1"
-	"github.com/dapr/components-contrib/eventsourcing/v1/mongodb/domain/service"
 	"strconv"
 	"time"
 
@@ -34,25 +17,21 @@ import (
 )
 
 const (
-	host                   = "host"
-	username               = "username"
-	password               = "password"
-	databaseName           = "databaseName"
-	eventCollectionName    = "eventCollectionName"
-	snapshotCollectionName = "snapshotCollectionName"
-	server                 = "server"
-	writeConcern           = "writeConcern"
-	readConcern            = "readConcern"
-	operationTimeout       = "operationTimeout"
-	params                 = "params"
-	id                     = "_id"
-	value                  = "value"
-	etag                   = "_etag"
+	host             = "host"
+	username         = "username"
+	password         = "password"
+	databaseName     = "databaseName"
+	server           = "server"
+	writeConcern     = "writeConcern"
+	readConcern      = "readConcern"
+	operationTimeout = "operationTimeout"
+	params           = "params"
+	id               = "_id"
+	value            = "value"
+	etag             = "_etag"
 
-	defaultTimeout                = 5 * time.Second
-	defaultDatabaseName           = "dapr_esdb"
-	defaultEventCollectionName    = "dapr_event"
-	defaultSnapshotCollectionName = "dapr_snapshot"
+	defaultTimeout      = 5 * time.Second
+	defaultDatabaseName = ""
 
 	// mongodb://<username>:<password@<host>/<database><params>
 	connectionURIFormatWithAuthentication = "mongodb://%s:%s@%s/%s%s"
@@ -67,30 +46,24 @@ const (
 // MongoDB is a state store implementation for MongoDB.
 type MongoDB struct {
 	state.DefaultBulkStore
-	client           *mongo.Client
-	operationTimeout time.Duration
-	metadata         mongoDBMetadata
-
-	logger logger.Logger
-
-	eventService     service.EventService
-	snapshotService  service.SnapshotService
-	aggregateService service.AggregateService
-	eventLogService  service.EventLogService
+	client            *mongo.Client
+	operationTimeout  time.Duration
+	database          *mongo.Database
+	metadata          MongoDBMetadata
+	logger            logger.Logger
+	collectionOptions *options.CollectionOptions
 }
 
-type mongoDBMetadata struct {
-	host                   string
-	username               string
-	password               string
-	databaseName           string
-	eventCollectionName    string
-	snapshotCollectionName string
-	server                 string
-	writeconcern           string
-	readconcern            string
-	params                 string
-	operationTimeout       time.Duration
+type MongoDBMetadata struct {
+	host             string
+	username         string
+	password         string
+	databaseName     string
+	server           string
+	writeconcern     string
+	readconcern      string
+	params           string
+	operationTimeout time.Duration
 }
 
 // NewMongoDB returns a new MongoDB state store.
@@ -102,15 +75,15 @@ func NewMongoDB(logger logger.Logger) *MongoDB {
 }
 
 // Init establishes connection to the store based on the metadata.
-func (m *MongoDB) Init(metadata es.Metadata) error {
-	meta, err := getMongoDBMetaData(metadata)
+func (m *MongoDB) Init(metadata Metadata) error {
+	meta, err := m.getMongoDBMetaData(metadata)
 	if err != nil {
 		return err
 	}
 
 	m.operationTimeout = meta.operationTimeout
 
-	client, err := getMongoDBClient(meta)
+	client, err := m.getMongoDBClient(meta)
 	if err != nil {
 		return fmt.Errorf("error in creating mongodb client: %s", err)
 	}
@@ -122,29 +95,30 @@ func (m *MongoDB) Init(metadata es.Metadata) error {
 	m.client = client
 
 	// get the write concern
-	wc, err := getWriteConcernObject(meta.writeconcern)
+	wc, err := m.getWriteConcernObject(meta.writeconcern)
 	if err != nil {
 		return fmt.Errorf("error in getting write concern object: %s", err)
 	}
 
 	// get the read concern
-	rc, err := getReadConcernObject(meta.readconcern)
+	rc, err := m.getReadConcernObject(meta.readconcern)
 	if err != nil {
 		return fmt.Errorf("error in getting read concern object: %s", err)
 	}
 
 	m.metadata = *meta
-	opts := options.Collection().SetWriteConcern(wc).SetReadConcern(rc)
+	m.collectionOptions = options.Collection().SetWriteConcern(wc).SetReadConcern(rc)
+	m.database = m.client.Database(meta.databaseName)
 
-	database := m.client.Database(meta.databaseName)
-
-	eventCollection := database.Collection(meta.eventCollectionName, opts)
-	snapshotCollection := database.Collection(meta.snapshotCollectionName, opts)
-
-	m.eventService = service.NewEventService(m.client, eventCollection)
-	m.snapshotService = service.NewSnapshotService(m.client, snapshotCollection)
-	m.aggregateService = service.NewAggregateService(m.client, eventCollection)
 	return nil
+}
+
+func (m *MongoDB) GetClient() *mongo.Client {
+	return m.client
+}
+
+func (m *MongoDB) NewCollection(name string) *mongo.Collection {
+	return m.database.Collection(name, m.collectionOptions)
 }
 
 func (m *MongoDB) Ping() error {
@@ -155,7 +129,11 @@ func (m *MongoDB) Ping() error {
 	return nil
 }
 
-func getMongoURI(metadata *mongoDBMetadata) string {
+func (m *MongoDB) GetMetadata() *MongoDBMetadata {
+	return &m.metadata
+}
+
+func (m *MongoDB) getMongoURI(metadata *MongoDBMetadata) string {
 	if len(metadata.server) != 0 {
 		return fmt.Sprintf(connectionURIFormatWithSrv, metadata.server, metadata.params)
 	}
@@ -167,8 +145,8 @@ func getMongoURI(metadata *mongoDBMetadata) string {
 	return fmt.Sprintf(connectionURIFormat, metadata.host, metadata.databaseName, metadata.params)
 }
 
-func getMongoDBClient(metadata *mongoDBMetadata) (*mongo.Client, error) {
-	uri := getMongoURI(metadata)
+func (m *MongoDB) getMongoDBClient(metadata *MongoDBMetadata) (*mongo.Client, error) {
+	uri := m.getMongoURI(metadata)
 
 	// Set client options
 	clientOptions := options.Client().ApplyURI(uri)
@@ -192,12 +170,10 @@ func getMongoDBClient(metadata *mongoDBMetadata) (*mongo.Client, error) {
 	return client, nil
 }
 
-func getMongoDBMetaData(metadata es.Metadata) (*mongoDBMetadata, error) {
-	meta := mongoDBMetadata{
-		databaseName:           defaultDatabaseName,
-		eventCollectionName:    defaultEventCollectionName,
-		snapshotCollectionName: defaultSnapshotCollectionName,
-		operationTimeout:       defaultTimeout,
+func (m *MongoDB) getMongoDBMetaData(metadata Metadata) (*MongoDBMetadata, error) {
+	meta := MongoDBMetadata{
+		databaseName:     defaultDatabaseName,
+		operationTimeout: defaultTimeout,
 	}
 
 	if val, ok := metadata.Properties[host]; ok && val != "" {
@@ -228,14 +204,6 @@ func getMongoDBMetaData(metadata es.Metadata) (*mongoDBMetadata, error) {
 		meta.databaseName = val
 	}
 
-	if val, ok := metadata.Properties[eventCollectionName]; ok && val != "" {
-		meta.eventCollectionName = val
-	}
-
-	if val, ok := metadata.Properties[snapshotCollectionName]; ok && val != "" {
-		meta.snapshotCollectionName = val
-	}
-
 	if val, ok := metadata.Properties[writeConcern]; ok && val != "" {
 		meta.writeconcern = val
 	}
@@ -259,7 +227,7 @@ func getMongoDBMetaData(metadata es.Metadata) (*mongoDBMetadata, error) {
 	return &meta, nil
 }
 
-func getWriteConcernObject(cn string) (*writeconcern.WriteConcern, error) {
+func (m *MongoDB) getWriteConcernObject(cn string) (*writeconcern.WriteConcern, error) {
 	var wc *writeconcern.WriteConcern
 	if cn != "" {
 		if cn == "majority" {
@@ -277,7 +245,7 @@ func getWriteConcernObject(cn string) (*writeconcern.WriteConcern, error) {
 	return wc, nil
 }
 
-func getReadConcernObject(cn string) (*readconcern.ReadConcern, error) {
+func (m *MongoDB) getReadConcernObject(cn string) (*readconcern.ReadConcern, error) {
 	switch cn {
 	case "local":
 		return readconcern.Local(), nil

@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1
+package common
 
 // DefaultSecretRefKeyName is the default key if secretKeyRef.key is not given.
 const DefaultSecretRefKeyName = "_value"
