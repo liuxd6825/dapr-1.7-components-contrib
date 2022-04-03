@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,24 +35,57 @@ func (r *EventLogRepository) Insert(ctx context.Context, entity *EventLog) error
 }
 
 func (r *EventLogRepository) Update(ctx context.Context, entity *EventLog) error {
-	id := entity.GetId()
-	filter := bson.D{{"_id", id}}
-	_, err := r.collection.UpdateOne(ctx, filter, entity, options.Update())
+	filter := bson.D{{"_id", entity.Id}}
+
+	data := bson.D{{"$set", bson.M{
+		"tenantId":  entity.TenantId,
+		"appId":     entity.AppId,
+		"class":     entity.Class,
+		"func":      entity.Func,
+		"level":     entity.Level,
+		"time":      entity.Time,
+		"status":    entity.Status,
+		"message":   entity.Message,
+		"pubAppId":  entity.PubAppId,
+		"eventId":   entity.EventId,
+		"commandId": entity.CommandId,
+	}}}
+	_, err := r.collection.UpdateOne(ctx, filter, data, options.Update())
 	return err
 }
 
-func (r *EventLogRepository) FindById(ctx context.Context, tenantId string, subAppId string, commandId string) (*EventLog, error) {
+func (r *EventLogRepository) FindById(ctx context.Context, tenantId, id string) (*EventLog, error) {
 	var result EventLog
-	id := GetEventLogId(tenantId, subAppId, commandId)
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{
+		{"_id", id},
+		{"tenantId", tenantId},
+	}
 	err := r.collection.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		if err.Error() == "mongo: no documents in result" {
-			return nil, nil
-		}
+	if err = getError(err); err != nil {
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (r *EventLogRepository) FindBySubAppIdAndCommandId(ctx context.Context, tenantId string, appId string, commandId string) (*[]EventLog, error) {
+	filter := bson.D{
+		{"tenantId", tenantId},
+		{"appId", appId},
+		{"commandId", commandId},
+	}
+	list := []EventLog{}
+	cursor, err := r.collection.Find(ctx, filter)
+	defer func() { // 关闭
+		if err := cursor.Close(ctx); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	if err = cursor.All(ctx, &list); err != nil {
+		return nil, err
+	}
+
+	return &list, nil
 }
 
 type AppLogRepository struct {
@@ -78,14 +112,26 @@ func (r *AppLogRepository) Insert(ctx context.Context, entity *AppLog) error {
 func (r *AppLogRepository) Update(ctx context.Context, entity *AppLog) error {
 	id := entity.Id
 	filter := bson.D{{"_id", id}}
-	_, err := r.collection.UpdateOne(ctx, filter, entity, options.Update())
+	data := bson.D{{"$set", bson.M{
+		"tenantId": entity.TenantId,
+		"appId":    entity.AppId,
+		"class":    entity.Class,
+		"func":     entity.Func,
+		"level":    entity.Level,
+		"time":     entity.Time,
+		"status":   entity.Status,
+		"message":  entity.Message,
+	}}}
+	_, err := r.collection.UpdateOne(ctx, filter, data, options.Update())
 	return err
 }
 
-func (r *AppLogRepository) FindById(ctx context.Context, tenantId string, subAppId string, commandId string) (*AppLog, error) {
+func (r *AppLogRepository) FindById(ctx context.Context, tenantId string, id string) (*AppLog, error) {
 	var result AppLog
-	id := GetEventLogId(tenantId, subAppId, commandId)
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{
+		{"_id", id},
+		{"tenantId", tenantId},
+	}
 	err := r.collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		if err.Error() == "mongo: no documents in result" {
@@ -94,4 +140,36 @@ func (r *AppLogRepository) FindById(ctx context.Context, tenantId string, subApp
 		return nil, err
 	}
 	return &result, nil
+}
+
+func (r *AppLogRepository) FindByEventId(ctx context.Context, tenantId string, eventId string) (*[]AppLog, error) {
+	filter := bson.D{
+		{"_id", id},
+		{"tenantId", tenantId},
+		{"eventId", eventId},
+	}
+	list := []AppLog{}
+	cursor, err := r.collection.Find(ctx, filter)
+	if err = getError(err); err != nil {
+		return nil, err
+	}
+	defer func() { // 关闭
+		if err := cursor.Close(ctx); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	if err = cursor.All(ctx, &list); err != nil {
+		return nil, err
+	}
+	return &list, nil
+}
+
+func getError(err error) error {
+	if err != nil {
+		if err.Error() == "mongo: no documents in result" {
+			return nil
+		}
+	}
+	return err
 }

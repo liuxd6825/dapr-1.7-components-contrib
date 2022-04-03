@@ -23,7 +23,7 @@ func NewLogger(log logger.Logger) applog.Logger {
 	}
 }
 
-func (l Logger) Init(metadata common.Metadata, getPubsubAdapter applog.GetPubsubAdapter) error {
+func (l *Logger) Init(metadata common.Metadata, getPubsubAdapter applog.GetPubsubAdapter) error {
 	l.pubsubAdapter = getPubsubAdapter()
 	l.mongodb = NewMongoDB(l.log)
 	l.metadata = metadata
@@ -41,27 +41,47 @@ func (l Logger) Init(metadata common.Metadata, getPubsubAdapter applog.GetPubsub
 	return nil
 }
 
-func (l Logger) WriteAppLog(ctx context.Context, req *applog.WriteAppLogRequest) (*applog.WriteAppLogResponse, error) {
+func (l *Logger) WriteAppLog(ctx context.Context, req *applog.WriteAppLogRequest) (*applog.WriteAppLogResponse, error) {
 	return nil, nil
 }
 
-func (l Logger) UpdateAppLog(ctx context.Context, req *applog.UpdateAppLogRequest) (*applog.UpdateAppLogResponse, error) {
+func (l *Logger) UpdateAppLog(ctx context.Context, req *applog.UpdateAppLogRequest) (*applog.UpdateAppLogResponse, error) {
 	return nil, nil
 }
 
-func (l Logger) GetAppLogById(ctx context.Context, req *applog.GetAppLogByIdRequest) (*applog.GetAppLogByIdResponse, error) {
-	return nil, nil
+func (l *Logger) GetAppLogById(ctx context.Context, req *applog.GetAppLogByIdRequest) (*applog.GetAppLogByIdResponse, error) {
+	log, err := l.appLogService.FindById(ctx, req.TenantId, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &applog.GetAppLogByIdResponse{
+		Id:       log.Id,
+		TenantId: log.TenantId,
+		AppId:    log.AppId,
+		Class:    log.Class,
+		Func:     log.Func,
+		Time:     log.Time,
+		Level:    log.Level,
+		Status:   log.Status,
+		Message:  log.Message,
+	}, nil
 }
 
 func (l *Logger) WriteEventLog(ctx context.Context, req *applog.WriteEventLogRequest) (*applog.WriteEventLogResponse, error) {
 	log := &EventLog{
-		TenantId:  req.TenantId,
+		Id:       req.Id,
+		TenantId: req.TenantId,
+		AppId:    req.AppId,
+		Class:    req.Class,
+		Func:     req.Func,
+		Time:     req.Time,
+		Level:    req.Level,
+		Status:   req.Status,
+		Message:  req.Message,
+
 		PubAppId:  req.PubAppId,
-		SubAppId:  req.SubAppId,
 		EventId:   req.EventId,
 		CommandId: req.CommandId,
-		Status:    req.Status,
-		Message:   req.Message,
 	}
 	err := l.eventLogService.Insert(ctx, log)
 	if err != nil {
@@ -72,13 +92,19 @@ func (l *Logger) WriteEventLog(ctx context.Context, req *applog.WriteEventLogReq
 
 func (l *Logger) UpdateEventLog(ctx context.Context, req *applog.UpdateEventLogRequest) (*applog.UpdateEventLogResponse, error) {
 	log := &EventLog{
-		TenantId:  req.TenantId,
+		Id:       req.Id,
+		TenantId: req.TenantId,
+		AppId:    req.AppId,
+		Class:    req.Class,
+		Func:     req.Func,
+		Time:     req.Time,
+		Level:    req.Level,
+		Status:   req.Status,
+		Message:  req.Message,
+
 		PubAppId:  req.PubAppId,
-		SubAppId:  req.SubAppId,
 		EventId:   req.EventId,
 		CommandId: req.CommandId,
-		Status:    req.Status,
-		Message:   req.Message,
 	}
 	err := l.eventLogService.Update(ctx, log)
 	if err != nil {
@@ -89,19 +115,36 @@ func (l *Logger) UpdateEventLog(ctx context.Context, req *applog.UpdateEventLogR
 
 func (l *Logger) GetEventLogByCommandId(ctx context.Context, req *applog.GetEventLogByCommandIdRequest) (*applog.GetEventLogByCommandIdResponse, error) {
 	tenantId := req.TenantId
-	subAppId := req.SubAppId
+	appId := req.AppId
 	commandId := req.CommandId
-	eventLog, err := l.eventLogService.FindById(ctx, tenantId, subAppId, commandId)
+	list, err := l.eventLogService.FindBySubAppIdAndCommandId(ctx, tenantId, appId, commandId)
 	if err != nil {
 		return nil, err
 	}
-	return &applog.GetEventLogByCommandIdResponse{
-		TenantId:  eventLog.TenantId,
-		SubAppId:  eventLog.SubAppId,
-		PubAppId:  eventLog.PubAppId,
-		EventId:   eventLog.EventId,
-		CommandId: eventLog.CommandId,
-		Status:    eventLog.Status,
-		Message:   eventLog.Message,
-	}, nil
+
+	data := make([]applog.EventLogDto, 0)
+	for _, log := range *list {
+		item := applog.EventLogDto{
+			Id:       log.Id,
+			TenantId: log.TenantId,
+			AppId:    log.AppId,
+			Class:    log.Class,
+			Func:     log.Func,
+			Time:     log.Time,
+			Level:    log.Level,
+			Status:   log.Status,
+			Message:  log.Message,
+
+			PubAppId:  log.PubAppId,
+			EventId:   log.EventId,
+			CommandId: log.CommandId,
+		}
+		data = append(data, item)
+	}
+
+	resp := &applog.GetEventLogByCommandIdResponse{
+		Data: &data,
+	}
+
+	return resp, nil
 }
