@@ -42,11 +42,41 @@ func (l *Logger) Init(metadata common.Metadata, getPubsubAdapter applog.GetPubsu
 }
 
 func (l *Logger) WriteAppLog(ctx context.Context, req *applog.WriteAppLogRequest) (*applog.WriteAppLogResponse, error) {
-	return nil, nil
+	log := &AppLog{
+		Id:       req.Id,
+		TenantId: req.TenantId,
+		AppId:    req.AppId,
+		Class:    req.Class,
+		Func:     req.Func,
+		Time:     req.Time,
+		Level:    req.Level,
+		Status:   req.Status,
+		Message:  req.Message,
+	}
+	err := l.appLogService.Insert(ctx, log)
+	if err != nil {
+		return nil, err
+	}
+	return &applog.WriteAppLogResponse{}, nil
 }
 
 func (l *Logger) UpdateAppLog(ctx context.Context, req *applog.UpdateAppLogRequest) (*applog.UpdateAppLogResponse, error) {
-	return nil, nil
+	log := &AppLog{
+		Id:       req.Id,
+		TenantId: req.TenantId,
+		AppId:    req.AppId,
+		Class:    req.Class,
+		Func:     req.Func,
+		Time:     req.Time,
+		Level:    req.Level,
+		Status:   req.Status,
+		Message:  req.Message,
+	}
+	err := l.appLogService.Update(ctx, log)
+	if err != nil {
+		return nil, err
+	}
+	return &applog.UpdateAppLogResponse{}, nil
 }
 
 func (l *Logger) GetAppLogById(ctx context.Context, req *applog.GetAppLogByIdRequest) (*applog.GetAppLogByIdResponse, error) {
@@ -54,6 +84,10 @@ func (l *Logger) GetAppLogById(ctx context.Context, req *applog.GetAppLogByIdReq
 	if err != nil {
 		return nil, err
 	}
+	if log == nil {
+		return nil, nil
+	}
+
 	return &applog.GetAppLogByIdResponse{
 		Id:       log.Id,
 		TenantId: log.TenantId,
