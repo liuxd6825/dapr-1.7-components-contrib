@@ -9,6 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const (
+	Id             = "_id"
+	TenantId       = "tenant_id"
+	AggregateId    = "aggregate_id"
+	AggregateType  = "aggregate_type"
+	EventId        = "event_id"
+	SequenceNumber = "sequence_number"
+)
+
 type BaseRepository struct {
 	client     *mongo.Client
 	collection *mongo.Collection
@@ -29,12 +38,12 @@ func NewAggregateRepository(client *mongo.Client, collection *mongo.Collection) 
 
 func (r *AggregateRepository) ExistAggregate(ctx context.Context, tenantId string, aggregateId string) (bool, error) {
 	filter := bson.M{
-		"tenant_id":    tenantId,
-		"aggregate_id": aggregateId,
+		TenantId:    tenantId,
+		AggregateId: aggregateId,
 	}
 	var event EventEntity
 	err := r.collection.FindOne(ctx, filter).Decode(&event)
-	if err != nil {
+	if err != nil && err != mongo.ErrNoDocuments {
 		return false, err
 	}
 	if &event == nil {
@@ -70,7 +79,7 @@ func (r *EventRepository) UpdatePublishState(ctx context.Context, tenantId strin
 		errMessage = err.Error()
 	}
 
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{{Id, id}}
 	data := bson.D{{"$set", bson.M{"publish_state": state, "publish_time": time, "publish_error": errMessage}}}
 	_, err = r.collection.UpdateOne(ctx, filter, data, options.Update())
 	return err
@@ -78,10 +87,10 @@ func (r *EventRepository) UpdatePublishState(ctx context.Context, tenantId strin
 
 func (r *EventRepository) FindById(ctx context.Context, tenantId string, id string) (*EventEntity, error) {
 	var result EventEntity
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{{Id, id}}
 	err := r.collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		if err.Error() == "mongo: no documents in result" {
+		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
 		return nil, err
@@ -92,12 +101,12 @@ func (r *EventRepository) FindById(ctx context.Context, tenantId string, id stri
 func (r *EventRepository) FindByEventId(ctx context.Context, tenantId string, eventId string) (*EventEntity, error) {
 	var result EventEntity
 	filter := bson.M{
-		"tenant_id": tenantId,
-		"event_id":  eventId,
+		TenantId: tenantId,
+		EventId:  eventId,
 	}
 	err := r.collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		if err.Error() == "mongo: no documents in result" {
+		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
 		return nil, err
@@ -107,8 +116,8 @@ func (r *EventRepository) FindByEventId(ctx context.Context, tenantId string, ev
 
 func (r *EventRepository) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]EventEntity, error) {
 	filter := bson.M{
-		"tenant_id":    tenantId,
-		"aggregate_id": aggregateId,
+		TenantId:    tenantId,
+		AggregateId: aggregateId,
 	}
 	cursor, _ := r.collection.Find(ctx, filter)
 
@@ -128,11 +137,11 @@ func (r *EventRepository) FindByAggregateId(ctx context.Context, tenantId string
 
 func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber int64) (*[]EventEntity, error) {
 	filter := bson.M{
-		"tenant_id":       tenantId,
-		"aggregate_id":    aggregateId,
-		"sequence_number": bson.M{"$gt": sequenceNumber},
+		TenantId:       tenantId,
+		AggregateId:    aggregateId,
+		SequenceNumber: bson.M{"$gt": sequenceNumber},
 	}
-	findOptions := options.Find().SetSort(bson.D{{"sequence_number", 1}})
+	findOptions := options.Find().SetSort(bson.D{{SequenceNumber, 1}})
 	cursor, err := r.collection.Find(ctx, filter, findOptions)
 	defer func() { // 关闭
 		if err := cursor.Close(ctx); err != nil {
@@ -150,10 +159,10 @@ func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId str
 
 func (r *EventRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) int64 {
 	filter := bson.M{
-		"aggregate_id":   aggregateId,
-		"aggregate_type": aggregateType,
+		AggregateId:   aggregateId,
+		AggregateType: aggregateType,
 	}
-	findOptions := options.FindOne().SetSort(bson.D{{"sequence_number", -1}})
+	findOptions := options.FindOne().SetSort(bson.D{{SequenceNumber, -1}})
 	result := r.collection.FindOne(ctx, filter, findOptions)
 	var event EventEntity
 	if err := result.Decode(&event); err == nil {
@@ -185,8 +194,8 @@ func (r *SnapshotRepository) Insert(ctx context.Context, snapshot *SnapshotEntit
 
 func (r *SnapshotRepository) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]SnapshotEntity, error) {
 	filter := bson.M{
-		"tenant_id":    tenantId,
-		"aggregate_id": aggregateId,
+		TenantId:    tenantId,
+		AggregateId: aggregateId,
 	}
 
 	cursor, err := r.collection.Find(ctx, filter)
@@ -209,13 +218,13 @@ func (r *SnapshotRepository) FindByAggregateId(ctx context.Context, tenantId str
 
 func (r *SnapshotRepository) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string) (*SnapshotEntity, error) {
 	filter := bson.M{
-		"tenant_id":    tenantId,
-		"aggregate_id": aggregateId,
+		TenantId:    tenantId,
+		AggregateId: aggregateId,
 	}
-	findOptions := options.FindOne().SetSort(bson.D{{"sequence_number", -1}})
+	findOptions := options.FindOne().SetSort(bson.D{{SequenceNumber, -1}})
 	var snapshot SnapshotEntity
 	if err := r.collection.FindOne(ctx, filter, findOptions).Decode(&snapshot); err != nil {
-		if err.Error() == "mongo: no documents in result" {
+		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
 		return nil, err
