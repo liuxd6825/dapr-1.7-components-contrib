@@ -26,6 +26,8 @@ const (
 	readConcern      = "readConcern"
 	operationTimeout = "operationTimeout"
 	params           = "params"
+	replicaSet       = "replica-set"
+	maxPoolSize      = "max-pool-size"
 	id               = "_id"
 	value            = "value"
 	etag             = "_etag"
@@ -64,6 +66,8 @@ type MongoDBMetadata struct {
 	readconcern      string
 	params           string
 	operationTimeout time.Duration
+	replicaSet       string
+	maxPoolSize      uint64
 }
 
 // NewMongoDB returns a new MongoDB state store.
@@ -149,20 +153,28 @@ func (m *MongoDB) getMongoDBClient(metadata *MongoDBMetadata) (*mongo.Client, er
 	uri := m.getMongoURI(metadata)
 
 	// Set client options
-	clientOptions := options.Client().ApplyURI(uri)
+	opts := options.Client().ApplyURI(uri)
 
 	// Connect to MongoDB
 	ctx, cancel := context.WithTimeout(context.Background(), metadata.operationTimeout)
 	defer cancel()
 
 	daprUserAgent := "dapr-event-sourcing-" + logger.DaprVersion
-	if clientOptions.AppName != nil {
-		clientOptions.SetAppName(daprUserAgent + ":" + *clientOptions.AppName)
+	if opts.AppName != nil {
+		opts.SetAppName(daprUserAgent + ":" + *opts.AppName)
 	} else {
-		clientOptions.SetAppName(daprUserAgent)
+		opts.SetAppName(daprUserAgent)
 	}
 
-	client, err := mongo.Connect(ctx, clientOptions)
+	if metadata.replicaSet != "" {
+		opts.SetReplicaSet(metadata.replicaSet)
+	}
+
+	if metadata.maxPoolSize != 0 {
+		opts.SetMaxPoolSize(metadata.maxPoolSize)
+	}
+
+	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -214,6 +226,19 @@ func (m *MongoDB) getMongoDBMetaData(metadata Metadata) (*MongoDBMetadata, error
 
 	if val, ok := metadata.Properties[params]; ok && val != "" {
 		meta.params = val
+	}
+
+	if val, ok := metadata.Properties[replicaSet]; ok && val != "" {
+		meta.replicaSet = val
+	}
+
+	if val, ok := metadata.Properties[maxPoolSize]; ok && val != "" {
+		size, err := strconv.ParseUint(val, 10, 32)
+		if err != nil {
+			meta.maxPoolSize = size
+		} else {
+			panic(fmt.Sprintf("%s %s is not nint64", maxPoolSize, val))
+		}
 	}
 
 	var err error

@@ -43,7 +43,10 @@ func (r *AggregateRepository) ExistAggregate(ctx context.Context, tenantId strin
 	}
 	var event EventEntity
 	err := r.collection.FindOne(ctx, filter).Decode(&event)
-	if err != nil && err != mongo.ErrNoDocuments {
+	if err == mongo.ErrNoDocuments {
+		return false, nil
+	}
+	if err != nil {
 		return false, err
 	}
 	if &event == nil {

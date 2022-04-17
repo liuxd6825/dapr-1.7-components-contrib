@@ -134,7 +134,7 @@ func (r *AppLogRepository) FindById(ctx context.Context, tenantId string, id str
 	}
 	err := r.collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		if err.Error() == "mongo: no documents in result" {
+		if err == mongo.ErrNoDocuments {
 			return nil, nil
 		}
 		return nil, err
@@ -167,7 +167,7 @@ func (r *AppLogRepository) FindByEventId(ctx context.Context, tenantId string, e
 
 func getError(err error) error {
 	if err != nil {
-		if err.Error() == "mongo: no documents in result" {
+		if err == mongo.ErrNoDocuments {
 			return nil
 		}
 	}
