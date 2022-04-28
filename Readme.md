@@ -3,6 +3,7 @@
 [![Build Status](https://github.com/dapr/components-contrib/workflows/components-contrib/badge.svg?event=push&branch=master)](https://github.com/dapr/components-contrib/actions?workflow=components-contrib)
 [![Discord](https://img.shields.io/discord/778680217417809931)](https://discord.com/channels/778680217417809931/781589820128493598)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/dapr/components-contrib/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B162%2Fgithub.com%2Fdapr%2Fcomponents-contrib.svg?type=shield)](https://app.fossa.com/projects/custom%2B162%2Fgithub.com%2Fdapr%2Fcomponents-contrib?ref=badge_shield)
 
 The purpose of Components Contrib is to provide open, community driven reusable components for building distributed applications.
 These components are being used by the [Dapr](https://github.com/dapr/dapr) project, but are separate and decoupled from it.
@@ -15,7 +16,6 @@ Available component types:
 * [Pub Sub](pubsub/Readme.md)
 * [State Stores](state/Readme.md)
 * [Secret Stores](secretstores/Readme.md)
-* [事件溯源EventSearching](eventsearching/Readme.md)
 
 For documentation on how components are being used in Dapr in a language/platform agnostic way, visit [Dapr Docs](https://docs.dapr.io).
 
