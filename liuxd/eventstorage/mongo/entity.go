@@ -13,7 +13,7 @@ type EventEntity struct {
 	EventRevision  string                 `bson:"event_revision"`
 	AggregateId    string                 `bson:"aggregate_id"`
 	AggregateType  string                 `bson:"aggregate_type"`
-	SequenceNumber int64                  `bson:"sequence_number"`
+	SequenceNumber uint64                 `bson:"sequence_number"`
 	TimeStamp      primitive.DateTime     `bson:"time_stamp"`
 	PublishName    string                 `bson:"publish_name"`
 	Topic          string                 `bson:"topic"`
@@ -25,7 +25,7 @@ type SnapshotEntity struct {
 	AggregateType     string                 `bson:"aggregate_type"`
 	AggregateData     map[string]interface{} `bson:"aggregate_data"`
 	AggregateRevision string                 `bson:"aggregate_revision"`
-	SequenceNumber    int64                  `bson:"sequence_number"`
-	Metadata          map[string]interface{} `bson:"metadata"`
+	SequenceNumber    uint64                 `bson:"sequence_number"`
+	Metadata          map[string]string      `bson:"metadata"`
 	TimeStamp         primitive.DateTime     `bson:"time_stamp"`
 }

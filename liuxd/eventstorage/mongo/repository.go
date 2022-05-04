@@ -138,7 +138,7 @@ func (r *EventRepository) FindByAggregateId(ctx context.Context, tenantId string
 	return &list, nil
 }
 
-func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber int64) (*[]EventEntity, error) {
+func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]EventEntity, error) {
 	filter := bson.M{
 		TenantId:       tenantId,
 		AggregateId:    aggregateId,
@@ -160,7 +160,7 @@ func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId str
 	return &list, nil
 }
 
-func (r *EventRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) int64 {
+func (r *EventRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) uint64 {
 	filter := bson.M{
 		AggregateId:   aggregateId,
 		AggregateType: aggregateType,

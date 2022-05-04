@@ -40,7 +40,7 @@ type EventService interface {
 	Save(ctx context.Context, event *EventEntity) error
 	FindById(ctx context.Context, tenantId string, id string) (*EventEntity, error)
 	FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]EventEntity, error)
-	FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber int64) (*[]EventEntity, error)
+	FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]EventEntity, error)
 	UpdatePublishStateOk(ctx context.Context, tenantId string, id string) error
 	UpdatePublishStateError(ctx context.Context, tenantId string, id string, err error) error
 }
@@ -103,7 +103,7 @@ func (s *eventService) FindByAggregateId(ctx context.Context, tenantId string, a
 	return s.repos.FindByAggregateId(ctx, tenantId, aggregateId)
 }
 
-func (s *eventService) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber int64) (*[]EventEntity, error) {
+func (s *eventService) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]EventEntity, error) {
 	if tenantId == "" {
 		return nil, errors.New("tenantId不能为空")
 	}

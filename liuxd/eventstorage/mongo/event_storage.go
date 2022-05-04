@@ -52,7 +52,7 @@ func (s *EventStorage) ExistAggregate(ctx context.Context, req *eventstorage.Exi
 
 // LoadEvents 加载聚合根对象
 func (s *EventStorage) LoadEvents(ctx context.Context, req *eventstorage.LoadEventRequest) (*eventstorage.LoadResponse, error) {
-	sequenceNumber := int64(0)
+	sequenceNumber := uint64(0)
 	snapshot, err := s.snapshotService.FindByMaxSequenceNumber(ctx, req.TenantId, req.AggregateId)
 	if err != nil {
 		return nil, newError("findByMaxSequenceNumber() error taking snapshot.", err)

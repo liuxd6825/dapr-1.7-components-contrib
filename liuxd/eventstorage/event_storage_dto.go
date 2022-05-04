@@ -15,8 +15,8 @@ type LoadResponse struct {
 type SnapshotDto struct {
 	AggregateData     map[string]interface{} `json:"aggregateData"`
 	AggregateRevision string                 `json:"aggregateRevision"`
-	SequenceNumber    int64                  `json:"sequenceNumber"`
-	Metadata          map[string]interface{} `json:"metadata"`
+	SequenceNumber    uint64                 `json:"sequenceNumber"`
+	Metadata          map[string]string      `json:"metadata"`
 }
 
 type EventDto struct {
@@ -24,7 +24,7 @@ type EventDto struct {
 	EventData      map[string]interface{} `json:"eventData"`
 	EventType      string                 `json:"eventType"`
 	EventRevision  string                 `json:"eventRevision"`
-	SequenceNumber int64                  `json:"sequenceNumber"`
+	SequenceNumber uint64                 `json:"sequenceNumber"`
 }
 
 type ApplyEventRequest struct {
@@ -50,8 +50,8 @@ type SaveSnapshotRequest struct {
 	AggregateType     string                 `json:"aggregateType"`
 	AggregateData     map[string]interface{} `json:"aggregateData"`
 	AggregateRevision string                 `json:"aggregateRevision"`
-	SequenceNumber    int64                  `json:"sequenceNumber"`
-	Metadata          map[string]interface{} `json:"metadata"`
+	SequenceNumber    uint64                 `json:"sequenceNumber"`
+	Metadata          map[string]string      `json:"metadata"`
 }
 
 type SaveSnapshotResponse struct {
