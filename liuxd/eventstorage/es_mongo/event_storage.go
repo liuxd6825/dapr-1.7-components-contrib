@@ -131,7 +131,10 @@ func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.Delete
 		return nil, err
 	}
 	if agg == nil {
-		return nil, errors.New(fmt.Sprintf("aggregateId \"%s\" not found", req.AggregateId))
+		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
+	}
+	if agg.Deleted {
+		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
 	}
 	if err := s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
 		return nil, err
@@ -165,7 +168,10 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 		return nil, err
 	}
 	if agg == nil {
-		return nil, errors.New(fmt.Sprintf("aggregateId \"%s\" not found", req.AggregateId))
+		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
+	}
+	if agg.Deleted {
+		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is already deleted.", req.AggregateId))
 	}
 
 	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, sequenceNumber)
