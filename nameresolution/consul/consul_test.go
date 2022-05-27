@@ -816,8 +816,8 @@ func TestMapConfig(t *testing.T) {
 				Scheme:     "Scheme",
 				Datacenter: "Datacenter",
 				HttpAuth: &HttpBasicAuth{
-					Username: "Username",
-					Password: "Password",
+					Username: "username",
+					Password: "password",
 				},
 				WaitTime:  10,
 				Token:     "Token",

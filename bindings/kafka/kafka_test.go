@@ -288,7 +288,7 @@ func TestParseMetadata(t *testing.T) {
 		m.Properties = map[string]string{"authRequired": "true", "saslPassword": "t0ps3cr3t", "consumerGroup": "a", "publishTopic": "a", "brokers": "a", "topics": "a"}
 		k := Kafka{logger: logger}
 		meta, err := k.getKafkaMetadata(m)
-		assert.Error(t, errors.New("kafka error: missing SASL Username"), err)
+		assert.Error(t, errors.New("kafka error: missing SASL username"), err)
 		assert.Nil(t, meta)
 	})
 	t.Run("SASL password required if authRequired is true", func(t *testing.T) {
@@ -296,7 +296,7 @@ func TestParseMetadata(t *testing.T) {
 		m.Properties = map[string]string{"authRequired": "true", "saslUsername": "foobar", "consumerGroup": "a", "publishTopic": "a", "brokers": "a", "topics": "a"}
 		k := Kafka{logger: logger}
 		meta, err := k.getKafkaMetadata(m)
-		assert.Error(t, errors.New("kafka error: missing SASL Password"), err)
+		assert.Error(t, errors.New("kafka error: missing SASL password"), err)
 		assert.Nil(t, meta)
 	})
 

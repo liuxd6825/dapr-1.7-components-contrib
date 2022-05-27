@@ -70,7 +70,7 @@ func StartHTTPServer(port int, ready chan bool) {
 		return
 	}
 
-	testLogger.Info(("Starting HTTP Server"))
+	testLogger.Info(("Starting HTTP server"))
 	ts := httptest.NewUnstartedServer(appRouter())
 	// NewUnstartedServer creates a listener. Close that listener and replace
 	// with the one we created.
@@ -87,9 +87,9 @@ func StartHTTPServer(port int, ready chan bool) {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
 
-	testLogger.Info(("Waiting to stop Server"))
+	testLogger.Info(("Waiting to stop server"))
 	<-stop
-	testLogger.Info(("Stopping Server"))
+	testLogger.Info(("Stopping server"))
 }
 
 func appRouter() *mux.Router {

@@ -158,7 +158,7 @@ func TestMissingSaslValues(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, meta)
 
-	require.Equal(t, fmt.Sprintf("kafka error: missing SASL Username for authType '%s'", passwordAuthType), err.Error())
+	require.Equal(t, fmt.Sprintf("kafka error: missing SASL username for authType '%s'", passwordAuthType), err.Error())
 
 	m.Properties["saslUsername"] = "sassafras"
 
@@ -166,7 +166,7 @@ func TestMissingSaslValues(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, meta)
 
-	require.Equal(t, fmt.Sprintf("kafka error: missing SASL Password for authType '%s'", passwordAuthType), err.Error())
+	require.Equal(t, fmt.Sprintf("kafka error: missing SASL password for authType '%s'", passwordAuthType), err.Error())
 }
 
 func TestMissingSaslValuesOnUpgrade(t *testing.T) {
@@ -179,7 +179,7 @@ func TestMissingSaslValuesOnUpgrade(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, meta)
 
-	require.Equal(t, fmt.Sprintf("kafka error: missing SASL Username for authType '%s'", passwordAuthType), err.Error())
+	require.Equal(t, fmt.Sprintf("kafka error: missing SASL username for authType '%s'", passwordAuthType), err.Error())
 }
 
 func TestMissingOidcValues(t *testing.T) {

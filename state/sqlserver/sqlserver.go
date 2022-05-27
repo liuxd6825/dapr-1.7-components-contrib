@@ -78,7 +78,7 @@ const (
 	defaultTable     = "state"
 )
 
-// NewSQLServerStateStore creates a new instance of a Sql Server transaction store.
+// NewSQLServerStateStore creates a new instance of a Sql server transaction store.
 func NewSQLServerStateStore(logger logger.Logger) *SQLServer {
 	store := SQLServer{
 		features: []state.Feature{state.FeatureETag, state.FeatureTransactional},
@@ -96,7 +96,7 @@ type IndexedProperty struct {
 	Type       string `json:"type"`
 }
 
-// SQLServer defines a Ms SQL Server based state store.
+// SQLServer defines a Ms SQL server based state store.
 type SQLServer struct {
 	connectionString  string
 	databaseName      string

@@ -69,7 +69,7 @@ func (gql *GraphQL) Init(metadata bindings.Metadata) error {
 		return fmt.Errorf("GraphQL Error: Missing GraphQL URL")
 	}
 
-	// Connect to GraphQL Server
+	// Connect to GraphQL server
 	client := graphql.NewClient(ep)
 
 	gql.client = client

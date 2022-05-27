@@ -101,7 +101,7 @@ func TestNewNetHTTPHandlerFuncRequests(t *testing.T) {
 			},
 		},
 		{
-			"Host is handled",
+			"host is handled",
 			func() *http.Request {
 				return httptest.NewRequest("GET", "http://localhost:8080/test", nil)
 			},

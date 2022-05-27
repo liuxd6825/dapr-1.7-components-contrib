@@ -182,13 +182,13 @@ func (k *Kafka) getKafkaMetadata(metadata bindings.Metadata) (*kafkaMetadata, er
 		if val, ok := metadata.Properties["saslUsername"]; ok && val != "" {
 			meta.SaslUsername = val
 		} else {
-			return nil, errors.New("kafka error: missing SASL Username")
+			return nil, errors.New("kafka error: missing SASL username")
 		}
 
 		if val, ok := metadata.Properties["saslPassword"]; ok && val != "" {
 			meta.SaslPassword = val
 		} else {
-			return nil, errors.New("kafka error: missing SASL Password")
+			return nil, errors.New("kafka error: missing SASL password")
 		}
 	}
 

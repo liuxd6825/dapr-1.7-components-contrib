@@ -115,7 +115,7 @@ func ConformanceTests(t *testing.T, props map[string]string, inputBinding bindin
 	// Example: runtime.GOMAXPROCS(20)
 
 	if waitForSetup {
-		testLogger.Info("Waiting on HTTP Server to start.")
+		testLogger.Info("Waiting on HTTP server to start.")
 		<-ready
 	}
 

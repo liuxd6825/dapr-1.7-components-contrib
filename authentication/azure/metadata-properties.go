@@ -21,7 +21,7 @@ var MetadataKeys = map[string][]string{ // nolint: gochecknoglobals
 	"Certificate": {"azureCertificate", "spnCertificate"},
 	// Path to a certificate
 	"CertificateFile": {"azureCertificateFile", "spnCertificateFile"},
-	// Password for the certificate
+	// password for the certificate
 	"CertificatePassword": {"azureCertificatePassword", "spnCertificatePassword"},
 	// Client ID for the Service Principal
 	// The "clientId" alias is supported for backwards-compatibility as it's used by some components, but should be considered deprecated

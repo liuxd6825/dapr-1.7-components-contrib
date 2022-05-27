@@ -220,7 +220,7 @@ func testSingleOperations(t *testing.T) {
 			// Get fails as the item does not exist
 			assertUserDoesNotExist(t, store, john.ID)
 
-			// Save and read
+			// Create and read
 			err := store.Set(&state.SetRequest{Key: john.ID, Value: john})
 			assert.Nil(t, err)
 			johnV1, etagFromInsert := assertLoadedUserIsEqual(t, store, john.ID, john)

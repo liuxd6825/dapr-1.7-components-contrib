@@ -182,7 +182,7 @@ func (k *Kafka) Init(metadata pubsub.Metadata) error {
 			return err
 		}
 	case passwordAuthType:
-		k.logger.Info("Configuring SASL Password authentication")
+		k.logger.Info("Configuring SASL password authentication")
 		k.saslUsername = meta.SaslUsername
 		k.saslPassword = meta.SaslPassword
 		updatePasswordAuthInfo(config, k.saslUsername, k.saslPassword)
@@ -436,13 +436,13 @@ func (k *Kafka) getKafkaMetadata(metadata pubsub.Metadata) (*kafkaMetadata, erro
 		if val, ok = metadata.Properties["saslUsername"]; ok && val != "" {
 			meta.SaslUsername = val
 		} else {
-			return nil, errors.New("kafka error: missing SASL Username for authType 'password'")
+			return nil, errors.New("kafka error: missing SASL username for authType 'password'")
 		}
 
 		if val, ok = metadata.Properties["saslPassword"]; ok && val != "" {
 			meta.SaslPassword = val
 		} else {
-			return nil, errors.New("kafka error: missing SASL Password for authType 'password'")
+			return nil, errors.New("kafka error: missing SASL password for authType 'password'")
 		}
 
 		k.logger.Debug("Configuring SASL password authentication.")

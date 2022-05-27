@@ -173,7 +173,7 @@ func TestSqlServer(t *testing.T) {
 		return nil
 	}
 
-	// helper function to insure the SQL Server Docker Container is truly ready
+	// helper function to insure the SQL server Docker Container is truly ready
 	checkSQLServerAvailability := func(ctx flow.Context) error {
 		db, err := sql.Open("sqlserver", dockerConnectionString)
 		if err != nil {
@@ -194,7 +194,7 @@ func TestSqlServer(t *testing.T) {
 		}
 		defer client.Close()
 
-		// common SQL injection techniques for SQL Server
+		// common SQL injection techniques for SQL server
 		sqlInjectionAttempts := []string{
 			"; DROP states--",
 			"dapr' OR '1'='1",
@@ -218,12 +218,12 @@ func TestSqlServer(t *testing.T) {
 		return nil
 	}
 
-	flow.New(t, "SQLServer certification using SQL Server Docker").
-		// Run SQL Server using Docker Compose.
+	flow.New(t, "SQLServer certification using SQL server Docker").
+		// Run SQL server using Docker Compose.
 		Step(dockercompose.Run("sqlserver", dockerComposeYAML)).
-		Step("wait for SQL Server readiness", retry.Do(time.Second*3, 10, checkSQLServerAvailability)).
+		Step("wait for SQL server readiness", retry.Do(time.Second*3, 10, checkSQLServerAvailability)).
 
-		// Run the Dapr sidecar with the SQL Server component.
+		// Run the Dapr sidecar with the SQL server component.
 		Step(sidecar.Run(sidecarNamePrefix+"dockerDefault",
 			embedded.WithoutApp(),
 			embedded.WithDaprGRPCPort(currentGrpcPort),
@@ -248,7 +248,7 @@ func TestSqlServer(t *testing.T) {
 		Step("wait", flow.Sleep(5*time.Second)).
 		Step("Run basic test again to verify reconnection occurred", basicTest).
 		Step("Run SQL injection test", verifySQLInjectionTest, sidecar.Stop(sidecarNamePrefix+"dockerDefault")).
-		Step("Stopping SQL Server Docker container", dockercompose.Stop("sqlserver", dockerComposeYAML)).
+		Step("Stopping SQL server Docker container", dockercompose.Stop("sqlserver", dockerComposeYAML)).
 		Run()
 
 	ports, err = dapr_testing.GetFreePorts(2)
@@ -258,12 +258,12 @@ func TestSqlServer(t *testing.T) {
 	currentHTTPPort = ports[1]
 
 	flow.New(t, "Using existing custom schema with indexed data").
-		// Run SQL Server using Docker Compose.
+		// Run SQL server using Docker Compose.
 		Step(dockercompose.Run("sqlserver", dockerComposeYAML)).
-		Step("wait for SQL Server readiness", retry.Do(time.Second*3, 10, checkSQLServerAvailability)).
+		Step("wait for SQL server readiness", retry.Do(time.Second*3, 10, checkSQLServerAvailability)).
 		Step("Creating schema", createCustomSchema).
 
-		// Run the Dapr sidecar with the SQL Server component.
+		// Run the Dapr sidecar with the SQL server component.
 		Step(sidecar.Run(sidecarNamePrefix+"dockerCustomSchema",
 			embedded.WithoutApp(),
 			embedded.WithDaprGRPCPort(currentGrpcPort),
@@ -275,7 +275,7 @@ func TestSqlServer(t *testing.T) {
 				}),
 			))).
 		Step("Run indexed properties verification test", verifyIndexedPopertiesTest, sidecar.Stop(sidecarNamePrefix+"dockerCustomSchema")).
-		Step("Stopping SQL Server Docker container", dockercompose.Stop("sqlserver", dockerComposeYAML)).
+		Step("Stopping SQL server Docker container", dockercompose.Stop("sqlserver", dockerComposeYAML)).
 		Run()
 
 	ports, err = dapr_testing.GetFreePorts(2)
@@ -284,8 +284,8 @@ func TestSqlServer(t *testing.T) {
 	currentGrpcPort = ports[0]
 	currentHTTPPort = ports[1]
 
-	flow.New(t, "SQL Server certification using Azure SQL").
-		// Run the Dapr sidecar with the SQL Server component.
+	flow.New(t, "SQL server certification using Azure SQL").
+		// Run the Dapr sidecar with the SQL server component.
 		Step(sidecar.Run(sidecarNamePrefix+"azure",
 			embedded.WithoutApp(),
 			embedded.WithDaprGRPCPort(currentGrpcPort),

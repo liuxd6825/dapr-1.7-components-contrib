@@ -12,12 +12,19 @@ type GetPubsubAdapter func() pubsub_adapter.Adapter
 type EventStorage interface {
 	// Init 初始化
 	Init(metadata common.Metadata, getAdapter GetPubsubAdapter) error
-	// LoadEvents 加载事件
-	LoadEvents(ctx context.Context, req *LoadEventRequest) (*LoadResponse, error)
-	// ExistAggregate 是否存在聚合根
-	ExistAggregate(ctx context.Context, req *ExistAggregateRequest) (*ExistAggregateResponse, error)
+
+	// LoadEvent 加载事件
+	LoadEvent(ctx context.Context, req *LoadEventRequest) (*LoadResponse, error)
+
+	// CreateEvent 创建聚合事件
+	CreateEvent(ctx context.Context, req *CreateEventRequest) (*CreateEventResponse, error)
+
+	// DeleteEvent 删除聚合事件
+	DeleteEvent(ctx context.Context, req *DeleteEventRequest) (*DeleteEventResponse, error)
+
 	// ApplyEvent 应用事件
-	ApplyEvent(ctx context.Context, req *ApplyEventRequest) (*ApplyResponse, error)
+	ApplyEvent(ctx context.Context, req *ApplyEventsRequest) (*ApplyEventsResponse, error)
+
 	// SaveSnapshot 保存镜像对象
 	SaveSnapshot(ctx context.Context, req *SaveSnapshotRequest) (*SaveSnapshotResponse, error)
 }

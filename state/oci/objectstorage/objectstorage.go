@@ -277,7 +277,7 @@ func (r *StateStore) writeDocument(req *state.SetRequest) error {
 		return fmt.Errorf("failed to process ttl meta data: %w", err)
 	}
 
-	r.logger.Debugf("Save state in OCI Object Storage Bucket under key %s ", req.Key)
+	r.logger.Debugf("Create state in OCI Object Storage Bucket under key %s ", req.Key)
 	objectName := getFileName(req.Key)
 	content := r.marshal(req)
 	objectLength := int64(len(content))
