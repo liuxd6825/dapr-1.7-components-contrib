@@ -26,7 +26,7 @@ import (
 
 	"github.com/grandcat/zeroconf"
 
-	"github.com/dapr/components-contrib/nameresolution"
+	"github.com/liuxd6825/components-contrib/nameresolution"
 	"github.com/dapr/kit/logger"
 )
 

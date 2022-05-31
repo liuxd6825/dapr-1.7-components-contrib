@@ -21,7 +21,7 @@ import (
 
 	"github.com/camunda-cloud/zeebe/clients/go/pkg/commands"
 
-	"github.com/dapr/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings"
 )
 
 var (

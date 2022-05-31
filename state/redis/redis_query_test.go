@@ -20,7 +20,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state/query"
 )
 
 func TestMongoQuery(t *testing.T) {

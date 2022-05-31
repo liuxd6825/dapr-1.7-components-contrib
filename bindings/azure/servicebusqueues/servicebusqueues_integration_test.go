@@ -24,10 +24,10 @@ import (
 	"time"
 
 	servicebus "github.com/Azure/azure-service-bus-go"
-	"github.com/dapr/components-contrib/bindings"
-	"github.com/dapr/components-contrib/metadata"
 	"github.com/dapr/kit/logger"
 	"github.com/google/uuid"
+	"github.com/liuxd6825/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/metadata"
 	"github.com/stretchr/testify/assert"
 )
 

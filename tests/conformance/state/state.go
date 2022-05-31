@@ -23,10 +23,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/contenttype"
-	"github.com/dapr/components-contrib/metadata"
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/tests/conformance/utils"
+	"github.com/liuxd6825/components-contrib/contenttype"
+	"github.com/liuxd6825/components-contrib/metadata"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/tests/conformance/utils"
 )
 
 type ValueType struct {

@@ -1,4 +1,4 @@
-module github.com/dapr/components-contrib
+module github.com/liuxd6825/components-contrib
 
 go 1.17
 

@@ -25,8 +25,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	jsoniterator "github.com/json-iterator/go"
 
-	aws_auth "github.com/dapr/components-contrib/authentication/aws"
-	"github.com/dapr/components-contrib/state"
+	aws_auth "github.com/liuxd6825/components-contrib/authentication/aws"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 // StateStore is a DynamoDB state store.

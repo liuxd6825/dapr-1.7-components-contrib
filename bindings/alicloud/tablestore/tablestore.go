@@ -20,7 +20,7 @@ import (
 
 	"github.com/aliyun/aliyun-tablestore-go-sdk/tablestore"
 
-	"github.com/dapr/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
 
 	"github.com/pkg/errors"

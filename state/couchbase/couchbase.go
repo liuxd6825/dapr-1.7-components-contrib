@@ -22,9 +22,9 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"gopkg.in/couchbase/gocb.v1"
 
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/utils"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/utils"
 )
 
 const (

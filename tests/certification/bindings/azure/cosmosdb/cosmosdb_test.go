@@ -23,20 +23,20 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/bindings"
-	cosmosdbbinding "github.com/dapr/components-contrib/bindings/azure/cosmosdb"
-	"github.com/dapr/components-contrib/secretstores"
-	secretstore_env "github.com/dapr/components-contrib/secretstores/local/env"
 	bindings_loader "github.com/dapr/dapr/pkg/components/bindings"
 	secretstores_loader "github.com/dapr/dapr/pkg/components/secretstores"
 	"github.com/dapr/dapr/pkg/runtime"
 	dapr_testing "github.com/dapr/dapr/pkg/testing"
 	daprsdk "github.com/dapr/go-sdk/client"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/bindings"
+	cosmosdbbinding "github.com/liuxd6825/components-contrib/bindings/azure/cosmosdb"
+	"github.com/liuxd6825/components-contrib/secretstores"
+	secretstore_env "github.com/liuxd6825/components-contrib/secretstores/local/env"
 
-	"github.com/dapr/components-contrib/tests/certification/embedded"
-	"github.com/dapr/components-contrib/tests/certification/flow"
-	"github.com/dapr/components-contrib/tests/certification/flow/sidecar"
+	"github.com/liuxd6825/components-contrib/tests/certification/embedded"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/sidecar"
 
 	"github.com/a8m/documentdb"
 )

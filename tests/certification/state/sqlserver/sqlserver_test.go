@@ -23,14 +23,14 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	// State.
-	"github.com/dapr/components-contrib/state"
-	state_sqlserver "github.com/dapr/components-contrib/state/sqlserver"
 	state_loader "github.com/dapr/dapr/pkg/components/state"
+	"github.com/liuxd6825/components-contrib/state"
+	state_sqlserver "github.com/liuxd6825/components-contrib/state/sqlserver"
 
 	// Secret stores.
-	"github.com/dapr/components-contrib/secretstores"
-	secretstore_env "github.com/dapr/components-contrib/secretstores/local/env"
 	secretstores_loader "github.com/dapr/dapr/pkg/components/secretstores"
+	"github.com/liuxd6825/components-contrib/secretstores"
+	secretstore_env "github.com/liuxd6825/components-contrib/secretstores/local/env"
 
 	// Dapr runtime and Go-SDK
 	"github.com/dapr/dapr/pkg/runtime"
@@ -39,13 +39,13 @@ import (
 	"github.com/dapr/kit/logger"
 
 	// Certification testing runnables
-	"github.com/dapr/components-contrib/tests/certification/embedded"
-	"github.com/dapr/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/embedded"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
 
-	"github.com/dapr/components-contrib/tests/certification/flow/dockercompose"
-	"github.com/dapr/components-contrib/tests/certification/flow/network"
-	"github.com/dapr/components-contrib/tests/certification/flow/retry"
-	"github.com/dapr/components-contrib/tests/certification/flow/sidecar"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/dockercompose"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/network"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/retry"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/sidecar"
 )
 
 const (

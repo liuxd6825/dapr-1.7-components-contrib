@@ -18,8 +18,8 @@ import (
 
 	"github.com/asaskevich/EventBus"
 
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 type bus struct {

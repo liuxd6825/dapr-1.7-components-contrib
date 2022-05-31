@@ -20,8 +20,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/aws/aws-sdk-go/service/secretsmanager/secretsmanageriface"
 
-	aws_auth "github.com/dapr/components-contrib/authentication/aws"
-	"github.com/dapr/components-contrib/secretstores"
+	aws_auth "github.com/liuxd6825/components-contrib/authentication/aws"
+	"github.com/liuxd6825/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
 )
 

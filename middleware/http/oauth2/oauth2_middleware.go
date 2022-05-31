@@ -23,7 +23,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"golang.org/x/oauth2"
 
-	"github.com/dapr/components-contrib/middleware"
+	"github.com/liuxd6825/components-contrib/middleware"
 )
 
 // Metadata is the oAuth middleware config.

@@ -20,8 +20,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/query"
 
 	"github.com/go-redis/redis/v8"
 )

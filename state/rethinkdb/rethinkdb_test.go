@@ -22,8 +22,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/state"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 // go test -timeout 30s github.com/dapr/components-contrib/state/rethinkdb -count 1 -run ^TestGetRethinkDBMetadata$.

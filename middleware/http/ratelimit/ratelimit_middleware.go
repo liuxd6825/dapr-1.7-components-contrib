@@ -21,9 +21,9 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 
-	"github.com/dapr/components-contrib/middleware"
-	"github.com/dapr/components-contrib/middleware/http/nethttpadaptor"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/middleware"
+	"github.com/liuxd6825/components-contrib/middleware/http/nethttpadaptor"
 )
 
 // Metadata is the ratelimit middleware config.

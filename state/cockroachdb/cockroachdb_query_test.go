@@ -21,7 +21,7 @@ import (
 	"github.com/agrea/ptr"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state/query"
 )
 
 func TestPostgresqlQueryBuildQuery(t *testing.T) {

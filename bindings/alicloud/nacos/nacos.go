@@ -26,7 +26,7 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 
-	"github.com/dapr/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
 )
 

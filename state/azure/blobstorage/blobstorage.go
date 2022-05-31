@@ -48,9 +48,9 @@ import (
 	"github.com/agrea/ptr"
 	jsoniter "github.com/json-iterator/go"
 
-	azauth "github.com/dapr/components-contrib/authentication/azure"
-	"github.com/dapr/components-contrib/state"
 	"github.com/dapr/kit/logger"
+	azauth "github.com/liuxd6825/components-contrib/authentication/azure"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 const (

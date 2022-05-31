@@ -17,8 +17,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dapr/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/bindings"
 
 	"github.com/golang/mock/gomock"
 	influxdb2 "github.com/influxdata/influxdb-client-go"

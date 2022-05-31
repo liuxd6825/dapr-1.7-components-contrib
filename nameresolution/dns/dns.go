@@ -16,8 +16,8 @@ package dns
 import (
 	"fmt"
 
-	"github.com/dapr/components-contrib/nameresolution"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/nameresolution"
 )
 
 type resolver struct {

@@ -25,9 +25,9 @@ import (
 	"github.com/camunda-cloud/zeebe/clients/go/pkg/pb"
 	"github.com/google/uuid"
 
-	"github.com/dapr/components-contrib/bindings"
-	"github.com/dapr/components-contrib/bindings/zeebe/command"
-	"github.com/dapr/components-contrib/bindings/zeebe/jobworker"
+	"github.com/liuxd6825/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings/zeebe/command"
+	"github.com/liuxd6825/components-contrib/bindings/zeebe/jobworker"
 	"github.com/dapr/kit/logger"
 )
 

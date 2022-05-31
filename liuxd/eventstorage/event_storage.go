@@ -2,8 +2,8 @@ package eventstorage
 
 import (
 	"context"
-	"github.com/dapr/components-contrib/liuxd/common"
-	pubsub_adapter "github.com/dapr/dapr/pkg/runtime/pubsub"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
+	pubsub_adapter "github.com/liuxd6825/dapr/pkg/runtime/pubsub"
 )
 
 type GetPubsubAdapter func() pubsub_adapter.Adapter

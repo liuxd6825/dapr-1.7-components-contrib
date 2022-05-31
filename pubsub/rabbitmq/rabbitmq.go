@@ -24,9 +24,9 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
 	"github.com/dapr/kit/retry"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 const (

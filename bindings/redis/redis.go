@@ -20,9 +20,9 @@ import (
 
 	"github.com/go-redis/redis/v8"
 
-	"github.com/dapr/components-contrib/bindings"
-	rediscomponent "github.com/dapr/components-contrib/internal/component/redis"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/bindings"
+	rediscomponent "github.com/liuxd6825/components-contrib/internal/component/redis"
 )
 
 // Redis is a redis output binding.

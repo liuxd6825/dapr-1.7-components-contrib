@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/dapr/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

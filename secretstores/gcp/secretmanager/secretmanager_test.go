@@ -19,8 +19,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 )
 
 func TestInit(t *testing.T) {

@@ -19,8 +19,8 @@ import (
 
 	"github.com/valyala/fasthttp"
 
-	"github.com/dapr/components-contrib/middleware"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/middleware"
 )
 
 // Metadata is the routerchecker middleware config.

@@ -16,7 +16,7 @@ package dockercompose
 import (
 	"os/exec"
 
-	"github.com/dapr/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
 )
 
 type Compose struct {

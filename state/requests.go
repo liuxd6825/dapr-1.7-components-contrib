@@ -13,7 +13,7 @@ limitations under the License.
 
 package state
 
-import "github.com/dapr/components-contrib/state/query"
+import "github.com/liuxd6825/components-contrib/state/query"
 
 // GetRequest is the object describing a state fetch request.
 type GetRequest struct {

@@ -34,7 +34,7 @@ If the pub sub component implementation can handle message TTL natively without 
 
 Example:
 ```go
-import contrib_metadata "github.com/dapr/components-contrib/metadata"
+import contrib_metadata "github.com/liuxd6825/components-contrib/metadata"
 
 //...
 

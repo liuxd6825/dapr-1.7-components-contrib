@@ -24,7 +24,7 @@ import (
 	"github.com/samuel/go-zookeeper/zk"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 //go:generate mockgen -package zookeeper -source zk.go -destination zk_mock.go

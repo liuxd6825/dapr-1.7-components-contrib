@@ -21,8 +21,8 @@ import (
 	oidc "github.com/coreos/go-oidc"
 	"github.com/valyala/fasthttp"
 
-	"github.com/dapr/components-contrib/middleware"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/middleware"
 )
 
 type bearerMiddlewareMetadata struct {

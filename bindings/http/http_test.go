@@ -25,8 +25,8 @@ import (
 
 	"github.com/dapr/kit/logger"
 
-	"github.com/dapr/components-contrib/bindings"
-	binding_http "github.com/dapr/components-contrib/bindings/http"
+	"github.com/liuxd6825/components-contrib/bindings"
+	binding_http "github.com/liuxd6825/components-contrib/bindings/http"
 )
 
 func TestOperations(t *testing.T) {

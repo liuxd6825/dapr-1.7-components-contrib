@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dapr/components-contrib/pubsub"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 func TestParseMetadata(t *testing.T) {

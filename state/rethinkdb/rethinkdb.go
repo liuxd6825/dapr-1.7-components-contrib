@@ -24,7 +24,7 @@ import (
 	r "github.com/dancannon/gorethink"
 	"github.com/pkg/errors"
 
-	"github.com/dapr/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state"
 	"github.com/dapr/kit/logger"
 )
 

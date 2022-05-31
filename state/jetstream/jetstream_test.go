@@ -23,7 +23,7 @@ import (
 	natsserver "github.com/nats-io/nats-server/v2/test"
 	"github.com/nats-io/nats.go"
 
-	"github.com/dapr/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 type tLogger interface {

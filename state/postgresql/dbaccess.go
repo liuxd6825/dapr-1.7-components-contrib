@@ -14,7 +14,7 @@ limitations under the License.
 package postgresql
 
 import (
-	"github.com/dapr/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 // dbAccess is a private interface which enables unit testing of PostgreSQL.

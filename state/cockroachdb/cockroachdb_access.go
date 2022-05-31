@@ -23,9 +23,9 @@ import (
 
 	"github.com/agrea/ptr"
 
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/query"
-	"github.com/dapr/components-contrib/state/utils"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state/utils"
 	"github.com/dapr/kit/logger"
 
 	// Blank import for the underlying PostgreSQL driver.

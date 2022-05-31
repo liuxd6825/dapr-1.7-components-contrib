@@ -21,7 +21,7 @@ import (
 	"github.com/a8m/documentdb"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state/query"
 )
 
 func TestCosmosDbKeyReplace(t *testing.T) {

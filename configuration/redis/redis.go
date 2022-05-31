@@ -27,8 +27,8 @@ import (
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/dapr/components-contrib/configuration"
-	"github.com/dapr/components-contrib/configuration/redis/internal"
+	"github.com/liuxd6825/components-contrib/configuration"
+	"github.com/liuxd6825/components-contrib/configuration/redis/internal"
 	"github.com/dapr/kit/logger"
 )
 

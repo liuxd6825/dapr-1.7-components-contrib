@@ -28,11 +28,11 @@ import (
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/dapr/components-contrib/authentication/azure"
-	"github.com/dapr/components-contrib/contenttype"
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/query"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/authentication/azure"
+	"github.com/liuxd6825/components-contrib/contenttype"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/query"
 )
 
 // StateStore is a CosmosDB state store.

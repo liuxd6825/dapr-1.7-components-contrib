@@ -17,8 +17,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 )
 
 type envSecretStore struct {

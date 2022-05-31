@@ -22,10 +22,10 @@ import (
 	"github.com/a8m/documentdb"
 	"github.com/cenkalti/backoff/v4"
 
-	"github.com/dapr/components-contrib/authentication/azure"
+	"github.com/liuxd6825/components-contrib/authentication/azure"
 
-	"github.com/dapr/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/bindings"
 )
 
 // CosmosDB allows performing state operations on collections.

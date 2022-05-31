@@ -23,8 +23,8 @@ import (
 	"google.golang.org/api/option"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 )
 
 const VersionID = "version_id"

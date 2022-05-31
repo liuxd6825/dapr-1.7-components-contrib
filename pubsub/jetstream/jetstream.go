@@ -21,9 +21,9 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/nkeys"
 
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
 	"github.com/dapr/kit/retry"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 type jetstreamPubSub struct {

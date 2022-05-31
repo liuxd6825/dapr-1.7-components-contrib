@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/dapr/components-contrib/bindings/alicloud/nacos"
+	"github.com/liuxd6825/components-contrib/bindings/alicloud/nacos"
 )
 
 func TestParseMetadata(t *testing.T) { //nolint:paralleltest

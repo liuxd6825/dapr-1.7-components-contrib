@@ -2,10 +2,10 @@ package mongo
 
 import (
 	"context"
-	"github.com/dapr/components-contrib/liuxd/applog"
-	"github.com/dapr/components-contrib/liuxd/common"
-	pubsub_adapter "github.com/dapr/dapr/pkg/runtime/pubsub"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/liuxd/applog"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
+	pubsub_adapter "github.com/liuxd6825/dapr/pkg/runtime/pubsub"
 )
 
 type Logger struct {

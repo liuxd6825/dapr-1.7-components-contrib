@@ -20,8 +20,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 	"github.com/stretchr/testify/assert"
 )
 

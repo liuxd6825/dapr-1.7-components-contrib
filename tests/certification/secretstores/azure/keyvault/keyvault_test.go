@@ -25,17 +25,17 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	// SecretStores
-	"github.com/dapr/components-contrib/secretstores"
-	akv "github.com/dapr/components-contrib/secretstores/azure/keyvault"
-	secretstore_env "github.com/dapr/components-contrib/secretstores/local/env"
+	"github.com/liuxd6825/components-contrib/secretstores"
+	akv "github.com/liuxd6825/components-contrib/secretstores/azure/keyvault"
+	secretstore_env "github.com/liuxd6825/components-contrib/secretstores/local/env"
 	secretstores_loader "github.com/dapr/dapr/pkg/components/secretstores"
 	"github.com/dapr/dapr/pkg/runtime"
 	dapr_testing "github.com/dapr/dapr/pkg/testing"
 	"github.com/dapr/kit/logger"
 
-	"github.com/dapr/components-contrib/tests/certification/embedded"
-	"github.com/dapr/components-contrib/tests/certification/flow"
-	"github.com/dapr/components-contrib/tests/certification/flow/sidecar"
+	"github.com/liuxd6825/components-contrib/tests/certification/embedded"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/sidecar"
 	"github.com/dapr/go-sdk/client"
 )
 
@@ -198,6 +198,6 @@ func TestKeyVault(t *testing.T) {
 
 	flow.New(t, "keyvault authentication using managed identity").
 		Step("Test secret access using managed identity authentication", managedIdentityTest)
-		// temporarily disable the managed identity test until we decide whether to remove this test or find a different way to spin up the required environment.
+	// temporarily disable the managed identity test until we decide whether to remove this test or find a different way to spin up the required environment.
                 // Run().
 }

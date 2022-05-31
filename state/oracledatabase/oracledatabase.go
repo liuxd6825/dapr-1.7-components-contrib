@@ -16,7 +16,7 @@ package oracledatabase
 import (
 	"fmt"
 
-	"github.com/dapr/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state"
 	"github.com/dapr/kit/logger"
 )
 

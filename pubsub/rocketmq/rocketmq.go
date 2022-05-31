@@ -26,7 +26,7 @@ import (
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	mqp "github.com/apache/rocketmq-client-go/v2/producer"
 
-	"github.com/dapr/components-contrib/pubsub"
+	"github.com/liuxd6825/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
 	"github.com/dapr/kit/retry"
 )

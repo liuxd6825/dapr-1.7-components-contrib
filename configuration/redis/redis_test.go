@@ -24,8 +24,8 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/configuration"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/configuration"
 )
 
 func TestConfigurationStore_Get(t *testing.T) {

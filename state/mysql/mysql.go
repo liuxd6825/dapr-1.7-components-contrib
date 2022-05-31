@@ -24,9 +24,9 @@ import (
 	"github.com/agrea/ptr"
 	"github.com/google/uuid"
 
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/utils"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/utils"
 )
 
 // Optimistic Concurrency is implemented using a string column that stores

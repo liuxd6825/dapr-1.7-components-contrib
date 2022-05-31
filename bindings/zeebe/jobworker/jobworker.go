@@ -28,9 +28,9 @@ import (
 	"github.com/camunda-cloud/zeebe/clients/go/pkg/worker"
 	"github.com/camunda-cloud/zeebe/clients/go/pkg/zbc"
 
-	"github.com/dapr/components-contrib/bindings"
-	"github.com/dapr/components-contrib/bindings/zeebe"
-	"github.com/dapr/components-contrib/metadata"
+	"github.com/liuxd6825/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings/zeebe"
+	"github.com/liuxd6825/components-contrib/metadata"
 	"github.com/dapr/kit/logger"
 )
 

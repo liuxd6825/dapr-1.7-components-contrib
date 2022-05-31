@@ -17,8 +17,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/config"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 var (

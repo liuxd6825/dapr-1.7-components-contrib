@@ -32,9 +32,9 @@ import (
 
 	gonanoid "github.com/matoous/go-nanoid/v2"
 
-	aws_auth "github.com/dapr/components-contrib/authentication/aws"
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
+	aws_auth "github.com/liuxd6825/components-contrib/authentication/aws"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 type snsSqs struct {

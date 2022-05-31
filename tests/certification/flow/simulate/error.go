@@ -16,7 +16,7 @@ package simulate
 import (
 	"sync/atomic"
 
-	"github.com/dapr/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
 	"github.com/pkg/errors"
 )
 

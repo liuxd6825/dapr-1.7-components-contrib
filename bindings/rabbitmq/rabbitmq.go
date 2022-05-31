@@ -22,8 +22,8 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/dapr/components-contrib/bindings"
-	contrib_metadata "github.com/dapr/components-contrib/metadata"
+	"github.com/liuxd6825/components-contrib/bindings"
+	contrib_metadata "github.com/liuxd6825/components-contrib/metadata"
 	"github.com/dapr/kit/logger"
 )
 

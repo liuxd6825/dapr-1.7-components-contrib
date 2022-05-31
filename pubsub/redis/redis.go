@@ -22,8 +22,8 @@ import (
 
 	"github.com/go-redis/redis/v8"
 
-	rediscomponent "github.com/dapr/components-contrib/internal/component/redis"
-	"github.com/dapr/components-contrib/pubsub"
+	rediscomponent "github.com/liuxd6825/components-contrib/internal/component/redis"
+	"github.com/liuxd6825/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
 )
 

@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dapr/components-contrib/bindings"
-	"github.com/dapr/components-contrib/bindings/zeebe/command"
-	"github.com/dapr/components-contrib/tests/e2e/bindings/zeebe"
+	"github.com/liuxd6825/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings/zeebe/command"
+	"github.com/liuxd6825/components-contrib/tests/e2e/bindings/zeebe"
 	"github.com/stretchr/testify/assert"
 )
 

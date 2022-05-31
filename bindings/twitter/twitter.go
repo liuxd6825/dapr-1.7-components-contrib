@@ -26,8 +26,8 @@ import (
 	"github.com/dghubble/oauth1"
 	"github.com/pkg/errors"
 
-	"github.com/dapr/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/bindings"
 )
 
 // Binding represents Twitter input/output binding.

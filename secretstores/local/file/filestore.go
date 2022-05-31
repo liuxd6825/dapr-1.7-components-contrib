@@ -23,9 +23,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/config"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 )
 
 type localSecretStoreMetaData struct {

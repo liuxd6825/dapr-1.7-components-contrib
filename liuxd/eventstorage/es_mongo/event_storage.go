@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dapr/components-contrib/liuxd/common"
-	"github.com/dapr/components-contrib/liuxd/eventstorage"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/service"
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/service"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 type EventStorage struct {

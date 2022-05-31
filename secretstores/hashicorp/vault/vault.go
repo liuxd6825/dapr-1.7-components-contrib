@@ -32,8 +32,8 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"golang.org/x/net/http2"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 )
 
 const (

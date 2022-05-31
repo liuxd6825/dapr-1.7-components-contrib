@@ -16,8 +16,8 @@ package mongo
 // mongodb package is an implementation of StateStore interface to perform operations on store
 
 import (
-	"github.com/dapr/components-contrib/liuxd/common"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
 )
 
 const (

@@ -20,8 +20,8 @@ import (
 	"github.com/aliyun/aliyun-tablestore-go-sdk/tablestore"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/dapr/components-contrib/state"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/state"
 )
 
 const (

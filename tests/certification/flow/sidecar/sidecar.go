@@ -20,9 +20,9 @@ import (
 	"github.com/dapr/dapr/pkg/runtime"
 	"github.com/dapr/kit/logger"
 
-	"github.com/dapr/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
 
-	rtembedded "github.com/dapr/components-contrib/tests/certification/embedded"
+	rtembedded "github.com/liuxd6825/components-contrib/tests/certification/embedded"
 	// Go SDK
 	dapr "github.com/dapr/go-sdk/client"
 )

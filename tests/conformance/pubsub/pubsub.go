@@ -26,9 +26,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/pubsub"
-	"github.com/dapr/components-contrib/tests/conformance/utils"
 	"github.com/dapr/kit/config"
+	"github.com/liuxd6825/components-contrib/pubsub"
+	"github.com/liuxd6825/components-contrib/tests/conformance/utils"
 )
 
 const (

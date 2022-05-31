@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/dapr/components-contrib/liuxd/common"
-	"github.com/dapr/components-contrib/liuxd/eventstorage"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/repository"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -47,27 +47,27 @@ func (s *eventService) Create(ctx context.Context, event *model.EventEntity) err
 
 func (s *eventService) FindById(ctx context.Context, tenantId string, id string) (*model.EventEntity, error) {
 	if tenantId == "" {
-		return nil, errors.New("tenantId不能为空")
+		return nil, errors.New("tenantId 不能为空")
 	}
 	if id == "" {
-		return nil, errors.New("aggregateId不能为空")
+		return nil, errors.New("aggregateId 不能为空")
 	}
 	return s.repos.FindById(ctx, tenantId, id)
 }
 
 func (s *eventService) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]model.EventEntity, error) {
 	if tenantId == "" {
-		return nil, errors.New("tenantId不能为空")
+		return nil, errors.New("tenantId 不能为空")
 	}
 	if aggregateId == "" {
-		return nil, errors.New("aggregateId不能为空")
+		return nil, errors.New("aggregateId 不能为空")
 	}
 	return s.repos.FindByAggregateId(ctx, tenantId, aggregateId)
 }
 
 func (s *eventService) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]model.EventEntity, error) {
 	if tenantId == "" {
-		return nil, errors.New("tenantId不能为空")
+		return nil, errors.New("tenantId 不能为空")
 	}
 	return s.repos.FindBySequenceNumber(ctx, tenantId, aggregateId, sequenceNumber)
 }

@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dapr/components-contrib/bindings"
-	"github.com/dapr/components-contrib/metadata"
+	"github.com/liuxd6825/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/metadata"
 )
 
 var ErrMissingMessageName = errors.New("messageName is a required attribute")

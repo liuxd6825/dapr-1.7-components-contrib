@@ -19,7 +19,7 @@ package command
 import (
 	"testing"
 
-	"github.com/dapr/components-contrib/tests/e2e/bindings/zeebe"
+	"github.com/liuxd6825/components-contrib/tests/e2e/bindings/zeebe"
 	"github.com/stretchr/testify/assert"
 )
 

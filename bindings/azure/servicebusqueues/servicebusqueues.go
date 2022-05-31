@@ -24,11 +24,11 @@ import (
 	servicebus "github.com/Azure/azure-service-bus-go"
 	"github.com/cenkalti/backoff/v4"
 
-	azauth "github.com/dapr/components-contrib/authentication/azure"
-	"github.com/dapr/components-contrib/bindings"
-	contrib_metadata "github.com/dapr/components-contrib/metadata"
 	"github.com/dapr/kit/logger"
 	"github.com/dapr/kit/retry"
+	azauth "github.com/liuxd6825/components-contrib/authentication/azure"
+	"github.com/liuxd6825/components-contrib/bindings"
+	contrib_metadata "github.com/liuxd6825/components-contrib/metadata"
 )
 
 const (

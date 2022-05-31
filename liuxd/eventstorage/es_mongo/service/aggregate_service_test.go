@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/dapr/components-contrib/liuxd/common"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/model"
 	"github.com/google/uuid"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
 	"golang.org/x/net/context"
 	"testing"
 )

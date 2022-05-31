@@ -22,8 +22,8 @@ import (
 	oos "github.com/alibabacloud-go/oos-20190601/client"
 	"github.com/alibabacloud-go/tea/tea"
 
-	"github.com/dapr/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/secretstores"
 )
 
 // Constant literals.

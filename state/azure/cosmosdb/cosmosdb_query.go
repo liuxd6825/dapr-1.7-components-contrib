@@ -22,8 +22,8 @@ import (
 	"github.com/agrea/ptr"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/query"
 )
 
 type Query struct {

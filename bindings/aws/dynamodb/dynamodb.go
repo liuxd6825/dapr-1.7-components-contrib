@@ -20,8 +20,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 
-	aws_auth "github.com/dapr/components-contrib/authentication/aws"
-	"github.com/dapr/components-contrib/bindings"
+	aws_auth "github.com/liuxd6825/components-contrib/authentication/aws"
+	"github.com/liuxd6825/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
 )
 

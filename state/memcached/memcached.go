@@ -23,8 +23,8 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/utils"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/utils"
 	"github.com/dapr/kit/logger"
 )
 

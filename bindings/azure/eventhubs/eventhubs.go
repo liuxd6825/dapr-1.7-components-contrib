@@ -31,9 +31,9 @@ import (
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"github.com/Azure/go-autorest/autorest/azure"
 
-	azauth "github.com/dapr/components-contrib/authentication/azure"
-	"github.com/dapr/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
+	azauth "github.com/liuxd6825/components-contrib/authentication/azure"
+	"github.com/liuxd6825/components-contrib/bindings"
 )
 
 const (

@@ -22,7 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/secretstores"
+	"github.com/liuxd6825/components-contrib/secretstores"
 	"github.com/dapr/kit/logger"
 )
 

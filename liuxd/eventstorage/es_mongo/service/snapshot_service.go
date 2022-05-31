@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/dapr/components-contrib/liuxd/common"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/dapr/components-contrib/liuxd/eventstorage/es_mongo/repository"
+	"github.com/liuxd6825/components-contrib/liuxd/common"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

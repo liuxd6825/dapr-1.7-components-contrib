@@ -28,9 +28,9 @@ import (
 
 	// Pub/Sub.
 
-	"github.com/dapr/components-contrib/pubsub"
-	pubsub_mqtt "github.com/dapr/components-contrib/pubsub/mqtt"
 	pubsub_loader "github.com/dapr/dapr/pkg/components/pubsub"
+	"github.com/liuxd6825/components-contrib/pubsub"
+	pubsub_mqtt "github.com/liuxd6825/components-contrib/pubsub/mqtt"
 
 	// Dapr runtime and Go-SDK
 	"github.com/dapr/dapr/pkg/runtime"
@@ -40,15 +40,15 @@ import (
 	kit_retry "github.com/dapr/kit/retry"
 
 	// Certification testing runnables
-	"github.com/dapr/components-contrib/tests/certification/embedded"
-	"github.com/dapr/components-contrib/tests/certification/flow"
-	"github.com/dapr/components-contrib/tests/certification/flow/app"
-	"github.com/dapr/components-contrib/tests/certification/flow/dockercompose"
-	"github.com/dapr/components-contrib/tests/certification/flow/network"
-	"github.com/dapr/components-contrib/tests/certification/flow/retry"
-	"github.com/dapr/components-contrib/tests/certification/flow/sidecar"
-	"github.com/dapr/components-contrib/tests/certification/flow/simulate"
-	"github.com/dapr/components-contrib/tests/certification/flow/watcher"
+	"github.com/liuxd6825/components-contrib/tests/certification/embedded"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/app"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/dockercompose"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/network"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/retry"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/sidecar"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/simulate"
+	"github.com/liuxd6825/components-contrib/tests/certification/flow/watcher"
 )
 
 const (

@@ -19,9 +19,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/service/sns"
 
-	aws_auth "github.com/dapr/components-contrib/authentication/aws"
-	"github.com/dapr/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
+	aws_auth "github.com/liuxd6825/components-contrib/authentication/aws"
+	"github.com/liuxd6825/components-contrib/bindings"
 )
 
 // AWSSNS is an AWS SNS binding.

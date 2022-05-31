@@ -23,7 +23,7 @@ import (
 	"github.com/camunda-cloud/zeebe/clients/go/pkg/zbc"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/dapr/components-contrib/bindings"
+	"github.com/liuxd6825/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
 )
 

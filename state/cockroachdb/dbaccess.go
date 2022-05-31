@@ -13,7 +13,7 @@ limitations under the License.
 
 package cockroachdb
 
-import "github.com/dapr/components-contrib/state"
+import "github.com/liuxd6825/components-contrib/state"
 
 // dbAccess is a private interface which enables unit testing of CockroachDB.
 type dbAccess interface {

@@ -26,10 +26,10 @@ import (
 
 	azservicebus "github.com/Azure/azure-service-bus-go"
 
-	azauth "github.com/dapr/components-contrib/authentication/azure"
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
 	"github.com/dapr/kit/retry"
+	azauth "github.com/liuxd6825/components-contrib/authentication/azure"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 const (

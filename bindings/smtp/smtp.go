@@ -22,8 +22,8 @@ import (
 
 	"gopkg.in/gomail.v2"
 
-	"github.com/dapr/components-contrib/bindings"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/bindings"
 )
 
 const (

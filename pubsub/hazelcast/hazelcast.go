@@ -25,9 +25,9 @@ import (
 	"github.com/hazelcast/hazelcast-go-client"
 	hazelcastCore "github.com/hazelcast/hazelcast-go-client/core"
 
-	"github.com/dapr/components-contrib/pubsub"
 	"github.com/dapr/kit/logger"
 	"github.com/dapr/kit/retry"
+	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 const (

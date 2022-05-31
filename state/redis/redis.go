@@ -24,13 +24,13 @@ import (
 	"github.com/go-redis/redis/v8"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/dapr/components-contrib/contenttype"
-	rediscomponent "github.com/dapr/components-contrib/internal/component/redis"
-	daprmetadata "github.com/dapr/components-contrib/metadata"
-	"github.com/dapr/components-contrib/state"
-	"github.com/dapr/components-contrib/state/query"
-	"github.com/dapr/components-contrib/state/utils"
 	"github.com/dapr/kit/logger"
+	"github.com/liuxd6825/components-contrib/contenttype"
+	rediscomponent "github.com/liuxd6825/components-contrib/internal/component/redis"
+	daprmetadata "github.com/liuxd6825/components-contrib/metadata"
+	"github.com/liuxd6825/components-contrib/state"
+	"github.com/liuxd6825/components-contrib/state/query"
+	"github.com/liuxd6825/components-contrib/state/utils"
 )
 
 const (
