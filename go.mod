@@ -157,7 +157,7 @@ require (
 )
 
 require (
-	github.com/dapr/dapr v1.7.1
+	github.com/liuxd6825/dapr v1.7.1
 	github.com/nacos-group/nacos-sdk-go/v2 v2.0.1
 	gopkg.in/couchbase/gocb.v1 v1.6.4
 )
@@ -331,3 +331,5 @@ require (
 replace k8s.io/client => github.com/kubernetes-client/go v0.0.0-20190928040339-c757968c4c36
 
 replace github.com/eclipse/paho.mqtt.golang => github.com/shivamkm07/paho.mqtt.golang v1.3.6-0.20220106130409-e28a1db639f8
+
+replace github.com/liuxd6825/dapr => ../dapr
