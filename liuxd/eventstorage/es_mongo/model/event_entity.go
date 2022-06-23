@@ -6,7 +6,7 @@ import (
 )
 
 type EventEntity struct {
-	Id             ObjectID                   `bson:"_id"`
+	Id             string                     `bson:"_id"`
 	TenantId       string                     `bson:"tenant_id" `
 	CommandId      string                     `bson:"command_id"`
 	EventId        string                     `bson:"event_id"`

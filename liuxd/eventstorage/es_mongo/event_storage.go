@@ -9,23 +9,25 @@ import (
 	"github.com/liuxd6825/components-contrib/liuxd/common"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/service"
 	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 type EventStorage struct {
-	mongodb          *MongoDB
+	mongodb          *other.MongoDB
 	log              logger.Logger
 	metadata         common.Metadata
 	getPubsubAdapter eventstorage.GetPubsubAdapter
 	eventService     service.EventService
 	snapshotService  service.SnapshotService
 	aggregateService service.AggregateService
+	relationService  service.RelationService
 }
 
 // NewMongoEventSourcing 创建
 func NewMongoEventSourcing(log logger.Logger) eventstorage.EventStorage {
-	return &EventStorage{log: log, mongodb: NewMongoDB(log)}
+	return &EventStorage{log: log, mongodb: other.NewMongoDB(log)}
 }
 
 //
@@ -43,15 +45,16 @@ func (s *EventStorage) Init(metadata common.Metadata, adapter eventstorage.GetPu
 		return err
 	}
 
-	aggregateCollection := s.mongodb.NewCollection(s.mongodb.storageMetadata.aggregateCollectionName)
-	eventCollection := s.mongodb.NewCollection(s.mongodb.storageMetadata.eventCollectionName)
-	snapshotCollection := s.mongodb.NewCollection(s.mongodb.storageMetadata.snapshotCollectionName)
+	aggregateCollection := s.mongodb.NewCollection(s.mongodb.StorageMetadata.AggregateCollectionName)
+	eventCollection := s.mongodb.NewCollection(s.mongodb.StorageMetadata.EventCollectionName)
+	snapshotCollection := s.mongodb.NewCollection(s.mongodb.StorageMetadata.SnapshotCollectionName)
 
-	mongoClient := s.mongodb.GetClient()
+	//mongoClient := s.mongodb.GetClient()
 
-	s.aggregateService = service.NewAggregateService(mongoClient, aggregateCollection)
-	s.eventService = service.NewEventService(mongoClient, eventCollection)
-	s.snapshotService = service.NewSnapshotService(mongoClient, snapshotCollection)
+	s.aggregateService = service.NewAggregateService(s.mongodb, aggregateCollection)
+	s.eventService = service.NewEventService(s.mongodb, eventCollection)
+	s.snapshotService = service.NewSnapshotService(s.mongodb, snapshotCollection)
+	s.relationService = service.NewRelationService(s.mongodb)
 
 	return nil
 }
@@ -246,7 +249,12 @@ func (s *EventStorage) saveEvent(ctx context.Context, req *eventstorage.Event, s
 		return newError("createEvent() error saving event.", err)
 	}
 
-	// 发送事件到消息队列，并设置PublishStatus为PublishStatusSuccess
+	// 通过领域事件，保存聚合关系
+	if err := s.saveRelations(ctx, req); err != nil {
+		return newError("relationService.Create() error.", err)
+	}
+
+	// 发送事件到消息队列，并设置 PublishStatus 为 PublishStatusSuccess
 	if err := s.publishMessage(ctx, req); err != nil {
 		return newError("publishMessage() failed to publish event.", err)
 	}
@@ -254,6 +262,16 @@ func (s *EventStorage) saveEvent(ctx context.Context, req *eventstorage.Event, s
 	// 更新event的消息发送状态为成功
 	if err := s.updatePublishStatue(ctx, req.EventId, eventstorage.PublishStatusSuccess); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (s *EventStorage) saveRelations(ctx context.Context, req *eventstorage.Event) error {
+	if req != nil && len(req.Relations) > 0 {
+		relation := model.NewRelationEntity(req.TenantId, req.AggregateId, req.AggregateType, req.Relations)
+		if err := s.relationService.Create(ctx, relation); err != nil {
+			return err
+		}
 	}
 	return nil
 }

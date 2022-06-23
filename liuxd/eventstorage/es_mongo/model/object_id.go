@@ -4,12 +4,12 @@ import "github.com/google/uuid"
 
 type ObjectID string
 
-var NilObjectID = ObjectID("")
+var NilObjectID = ""
 
-func ObjectIDFromHex(str string) (ObjectID, error) {
-	return ObjectID(str), nil
+func ObjectIDFromHex(str string) (string, error) {
+	return str, nil
 }
 
-func NewObjectID() ObjectID {
-	return ObjectID(uuid.New().String())
+func NewObjectID() string {
+	return uuid.New().String()
 }

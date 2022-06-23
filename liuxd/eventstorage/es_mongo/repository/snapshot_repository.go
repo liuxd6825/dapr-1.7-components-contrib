@@ -4,37 +4,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const (
-	IdField             = "_id"
-	TenantIdField       = "tenant_id"
-	AggregateIdField    = "aggregate_id"
-	AggregateTypeField  = "aggregate_type"
-	EventIdField        = "event_id"
-	SequenceNumberField = "sequence_number"
-	PublishStatusField  = "publish_status"
-)
-
-type BaseRepository struct {
-	client     *mongo.Client
-	collection *mongo.Collection
-}
-
 type SnapshotRepository struct {
-	BaseRepository
+	BaseRepository[*model.SnapshotEntity]
 }
 
-func NewSnapshotRepository(client *mongo.Client, collection *mongo.Collection) *SnapshotRepository {
-	return &SnapshotRepository{
-		BaseRepository{
-			client:     client,
-			collection: collection,
-		},
-	}
+func NewSnapshotRepository(mongodb *other.MongoDB, collection *mongo.Collection) *SnapshotRepository {
+	res := &SnapshotRepository{}
+	res.mongodb = mongodb
+	res.collection = collection
+	return res
 }
 
 func (r *SnapshotRepository) Insert(ctx context.Context, snapshot *model.SnapshotEntity) error {
@@ -52,7 +36,6 @@ func (r *SnapshotRepository) FindByAggregateId(ctx context.Context, tenantId str
 		TenantIdField:    tenantId,
 		AggregateIdField: aggregateId,
 	}
-
 	cursor, err := r.collection.Find(ctx, filter)
 	defer func() { // 关闭
 		if err := cursor.Close(ctx); err != nil {

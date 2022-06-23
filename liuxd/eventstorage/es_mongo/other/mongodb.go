@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package es_mongo
+package other
 
 // mongodb package is an implementation of StateStore interface to perform operations on store
 
@@ -36,14 +36,14 @@ const (
 // MongoDB is a state store implementation for MongoDB.
 type MongoDB struct {
 	*common.MongoDB
-	storageMetadata *storageMetadata
+	StorageMetadata *StorageMetadata
 }
 
-type storageMetadata struct {
+type StorageMetadata struct {
 	*common.MongoDBMetadata
-	aggregateCollectionName string
-	eventCollectionName     string
-	snapshotCollectionName  string
+	AggregateCollectionName string
+	EventCollectionName     string
+	SnapshotCollectionName  string
 }
 
 // NewMongoDB returns a new MongoDB state store.
@@ -64,25 +64,25 @@ func (m *MongoDB) Init(metadata common.Metadata) error {
 	if err != nil {
 		return err
 	}
-	m.storageMetadata = storageMetadata
+	m.StorageMetadata = storageMetadata
 	return nil
 }
 
-func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*storageMetadata, error) {
-	meta := storageMetadata{
+func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*StorageMetadata, error) {
+	meta := StorageMetadata{
 		MongoDBMetadata:         m.MongoDB.GetMetadata(),
-		eventCollectionName:     defaultEventCollectionName,
-		snapshotCollectionName:  defaultSnapshotCollectionName,
-		aggregateCollectionName: defaultAggregateCollectionName,
+		EventCollectionName:     defaultEventCollectionName,
+		SnapshotCollectionName:  defaultSnapshotCollectionName,
+		AggregateCollectionName: defaultAggregateCollectionName,
 	}
 	if val, ok := metadata.Properties[eventCollectionName]; ok && val != "" {
-		meta.eventCollectionName = val
+		meta.EventCollectionName = val
 	}
 	if val, ok := metadata.Properties[snapshotCollectionName]; ok && val != "" {
-		meta.snapshotCollectionName = val
+		meta.SnapshotCollectionName = val
 	}
 	if val, ok := metadata.Properties[aggregateCollectionName]; ok && val != "" {
-		meta.aggregateCollectionName = val
+		meta.AggregateCollectionName = val
 	}
 	return &meta, nil
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -18,8 +19,8 @@ type aggregateService struct {
 	repos *repository.AggregateRepository
 }
 
-func NewAggregateService(client *mongo.Client, collection *mongo.Collection) AggregateService {
-	return &aggregateService{repos: repository.NewAggregateRepository(client, collection)}
+func NewAggregateService(mongodb *other.MongoDB, collection *mongo.Collection) AggregateService {
+	return &aggregateService{repos: repository.NewAggregateRepository(mongodb, collection)}
 }
 
 func (c *aggregateService) Create(ctx context.Context, req *model.AggregateEntity) error {

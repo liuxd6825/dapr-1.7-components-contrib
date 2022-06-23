@@ -73,7 +73,7 @@ func (r *EventLogRepository) FindBySubAppIdAndCommandId(ctx context.Context, ten
 		{"appId", appId},
 		{"commandId", commandId},
 	}
-	list := []EventLog{}
+	var list []EventLog
 	cursor, err := r.collection.Find(ctx, filter)
 	defer func() { // 关闭
 		if err := cursor.Close(ctx); err != nil {

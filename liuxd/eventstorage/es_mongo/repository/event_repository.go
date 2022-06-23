@@ -5,22 +5,21 @@ import (
 	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type EventRepository struct {
-	BaseRepository
+	BaseRepository[*model.EventEntity]
 }
 
-func NewEventRepository(client *mongo.Client, collection *mongo.Collection) *EventRepository {
-	return &EventRepository{
-		BaseRepository{
-			client:     client,
-			collection: collection,
-		},
-	}
+func NewEventRepository(mongodb *other.MongoDB, collection *mongo.Collection) *EventRepository {
+	res := &EventRepository{}
+	res.mongodb = mongodb
+	res.collection = collection
+	return res
 }
 
 func (r *EventRepository) Insert(ctx context.Context, entity *model.EventEntity) error {

@@ -37,6 +37,7 @@ type Event struct {
 	EventType     string                 `json:"eventType"`
 	EventVersion  string                 `json:"eventVersion"`
 	PubsubName    string                 `json:"pubsubName"`
+	Relations     map[string]string      `json:"relations"`
 	Topic         string                 `json:"topic"`
 	Metadata      map[string]string      `json:"metadata"`
 }
@@ -64,9 +65,11 @@ type EventDto struct {
 	EventId      string                 `json:"eventId"`
 	EventData    map[string]interface{} `json:"eventData"`
 	EventType    string                 `json:"eventType"`
-	EventVersion string                 `json:"eventRevision"`
-	PubsubName   string                 `json:"pubsubName"`
-	Topic        string                 `json:"topic"`
+	EventVersion string                 `json:"eventVision"`
+	Relations    map[string]string      `json:"relations"`
+	//EventTime    time.Time              `json:"eventTime"`
+	PubsubName string `json:"pubsubName"`
+	Topic      string `json:"topic"`
 }
 
 type ApplyEventsRequest struct {

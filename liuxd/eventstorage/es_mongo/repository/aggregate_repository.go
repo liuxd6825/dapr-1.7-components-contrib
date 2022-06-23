@@ -5,21 +5,20 @@ import (
 	"errors"
 	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AggregateRepository struct {
-	BaseRepository
+	BaseRepository[*model.AggregateEntity]
 }
 
-func NewAggregateRepository(client *mongo.Client, collection *mongo.Collection) *AggregateRepository {
-	return &AggregateRepository{
-		BaseRepository{
-			client:     client,
-			collection: collection,
-		},
-	}
+func NewAggregateRepository(mongodb *other.MongoDB, collection *mongo.Collection) *AggregateRepository {
+	res := &AggregateRepository{}
+	res.mongodb = mongodb
+	res.collection = collection
+	return res
 }
 
 func (r *AggregateRepository) FindById(ctx context.Context, tenantId string, aggregateId string) (*model.AggregateEntity, error) {

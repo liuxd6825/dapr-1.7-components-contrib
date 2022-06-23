@@ -3,7 +3,7 @@ package model
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type SnapshotEntity struct {
-	Id               ObjectID               `bson:"_id"`
+	Id               string                 `bson:"_id"`
 	TenantId         string                 `bson:"tenant_id"`
 	AggregateId      string                 `bson:"aggregate_id"`
 	AggregateType    string                 `bson:"aggregate_type"`
