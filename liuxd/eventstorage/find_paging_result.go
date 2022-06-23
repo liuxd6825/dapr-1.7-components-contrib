@@ -7,17 +7,17 @@ type OnIsFond func() error
 
 type FindPagingResult[T any] struct {
 	Data       *[]T   `json:"data"`
-	TotalRows  int64  `json:"totalRows"`
-	TotalPages int64  `json:"totalPages"`
-	PageNum    int64  `json:"pageNum"`
-	PageSize   int64  `json:"pageSize"`
+	TotalRows  uint64 `json:"totalRows"`
+	TotalPages uint64 `json:"totalPages"`
+	PageNum    uint64 `json:"pageNum"`
+	PageSize   uint64 `json:"pageSize"`
 	Filter     string `json:"filter"`
 	Sort       string `json:"sort"`
 	Error      error  `json:"-"`
 	IsFound    bool   `json:"-"`
 }
 
-func NewFindPagingResult[T any](data *[]T, totalRows int64, query FindPagingQuery, err error) *FindPagingResult[T] {
+func NewFindPagingResult[T any](data *[]T, totalRows uint64, query FindPagingQuery, err error) *FindPagingResult[T] {
 	if data != nil && query != nil {
 		return &FindPagingResult[T]{
 			Data:       data,
@@ -52,7 +52,7 @@ func NewFindPagingResultWithError[T interface{}](err error) *FindPagingResult[T]
 	}
 }
 
-func getTotalPage(totalRows int64, pageSize int64) int64 {
+func getTotalPage(totalRows uint64, pageSize uint64) uint64 {
 	if pageSize == 0 {
 		return 0
 	}
@@ -104,19 +104,19 @@ func (f *FindPagingResult[T]) OnSuccess(success OnSuccessList[T]) *FindPagingRes
 	return f
 }
 
-func (f *FindPagingResult[T]) GetTotalRows() int64 {
+func (f *FindPagingResult[T]) GetTotalRows() uint64 {
 	return f.TotalRows
 }
 
-func (f *FindPagingResult[T]) GetTotalPages() int64 {
+func (f *FindPagingResult[T]) GetTotalPages() uint64 {
 	return f.TotalPages
 }
 
-func (f *FindPagingResult[T]) GetPageNum() int64 {
+func (f *FindPagingResult[T]) GetPageNum() uint64 {
 	return f.PageNum
 }
 
-func (f *FindPagingResult[T]) GetPageSize() int64 {
+func (f *FindPagingResult[T]) GetPageSize() uint64 {
 	return f.PageSize
 }
 

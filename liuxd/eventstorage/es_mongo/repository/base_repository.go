@@ -34,8 +34,8 @@ func (r *BaseRepository[T]) FindPaging(ctx context.Context, collection *mongo.Co
 		data := r.NewEntityList()
 		findOptions := getFindOptions(opts...)
 		if query.GetPageSize() > 0 {
-			findOptions.SetLimit(query.GetPageSize())
-			findOptions.SetSkip(query.GetPageSize() * query.GetPageNum())
+			findOptions.SetLimit(int64(query.GetPageSize()))
+			findOptions.SetSkip(int64(query.GetPageSize() * query.GetPageNum()))
 		}
 		if len(query.GetSort()) > 0 {
 			sort, err := r.getSort(query.GetSort())
@@ -51,7 +51,7 @@ func (r *BaseRepository[T]) FindPaging(ctx context.Context, collection *mongo.Co
 		}
 		err = cursor.All(ctx, data)
 		totalRows, err := collection.CountDocuments(ctx, filter)
-		findData := eventstorage.NewFindPagingResult[T](data, totalRows, query, err)
+		findData := eventstorage.NewFindPagingResult[T](data, uint64(totalRows), query, err)
 		return findData, true, err
 	})
 

@@ -184,6 +184,27 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 	return &eventstorage.ApplyEventsResponse{}, nil
 }
 
+func (s *EventStorage) GetRelations(ctx context.Context, req *eventstorage.GetRelationsRequest) (*eventstorage.GetRelationsResponse, error) {
+	data, _, err := s.relationService.FindPaging(ctx, req.AggregateType, req)
+	if err != nil {
+		return nil, err
+	}
+	var errMsg string
+	if data.Error != nil {
+		errMsg = data.Error.Error()
+	}
+	res := &eventstorage.GetRelationsResponse{
+		TotalRows:  uint64(data.TotalRows),
+		TotalPages: uint64(data.TotalPages),
+		PageSize:   uint64(data.PageSize),
+		PageNum:    uint64(data.PageNum),
+		Filter:     data.Filter,
+		Sort:       data.Sort,
+		Error:      errMsg,
+	}
+	return res, nil
+}
+
 func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregateId string, aggregateType string, events *[]eventstorage.EventDto, startSequenceNumber uint64) error {
 	if events == nil {
 		return errors.New("events is nil")

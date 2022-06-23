@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
@@ -53,7 +54,7 @@ func (r *RelationRepository) UpdateOne(ctx context.Context, relation *model.Rela
 }
 
 func (r *RelationRepository) FindPaging(ctx context.Context, tableName string, query eventstorage.FindPagingQuery, opts ...*other.FindOptions) *eventstorage.FindPagingResult[*model.RelationEntity] {
-	coll := r.GetCollection(tableName)
+	coll := r.GetCollection(utils.AsMongoName(tableName))
 	return r.BaseRepository.FindPaging(ctx, coll, query, opts...)
 }
 

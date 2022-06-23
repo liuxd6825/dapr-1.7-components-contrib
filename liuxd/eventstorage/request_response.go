@@ -1,5 +1,9 @@
 package eventstorage
 
+import (
+	"time"
+)
+
 type LoadEventRequest struct {
 	TenantId    string `json:"tenantId"`
 	AggregateId string `json:"aggregateId"`
@@ -67,9 +71,9 @@ type EventDto struct {
 	EventType    string                 `json:"eventType"`
 	EventVersion string                 `json:"eventVision"`
 	Relations    map[string]string      `json:"relations"`
-	//EventTime    time.Time              `json:"eventTime"`
-	PubsubName string `json:"pubsubName"`
-	Topic      string `json:"topic"`
+	EventTime    time.Time              `json:"eventTime"`
+	PubsubName   string                 `json:"pubsubName"`
+	Topic        string                 `json:"topic"`
 }
 
 type ApplyEventsRequest struct {
@@ -165,4 +169,53 @@ type GetEventLogByCommandIdResponse struct {
 	CommandId string `json:"commandId"`
 	Status    bool   `json:"status"`
 	Message   string `json:"message"`
+}
+
+type GetRelationsRequest struct {
+	TenantId      string `json:"tenantId"`
+	AggregateType string `json:"aggregateType"`
+	Filter        string `json:"filter"`
+	Sort          string `json:"sort"`
+	PageNum       uint64 `json:"pageNum"`
+	PageSize      uint64 `json:"pageSize"`
+}
+
+func (g *GetRelationsRequest) GetTenantId() string {
+	return g.TenantId
+}
+
+func (g *GetRelationsRequest) GetFilter() string {
+	return g.Filter
+}
+
+func (g *GetRelationsRequest) GetSort() string {
+	return g.Sort
+}
+
+func (g *GetRelationsRequest) GetPageNum() uint64 {
+	return g.PageNum
+}
+func (g *GetRelationsRequest) GetPageSize() uint64 {
+	return g.PageSize
+}
+
+type GetRelationsResponse struct {
+	Data       []Relation `json:"data"`
+	TotalRows  uint64     `json:"totalRows"`
+	TotalPages uint64     `json:"totalPages"`
+	PageNum    uint64     `json:"pageNum"`
+	PageSize   uint64     `json:"pageSize"`
+	Filter     string     `json:"filter"`
+	Sort       string     `json:"sort"`
+	Error      string     `json:"error"`
+	IsFound    bool       `json:"isFound"`
+}
+
+type Relation struct {
+	Id          string            `json:"id"`
+	TenantId    string            `json:"tenantId"`
+	TableName   string            `json:"tableName"`
+	AggregateId string            `json:"aggregateId"`
+	IsDeleted   bool              `json:"isDeleted"`
+	Items       map[string]string `json:"items"`
 }

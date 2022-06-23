@@ -29,18 +29,10 @@ package eventstorage
 
 type FindPagingQuery interface {
 	GetTenantId() string
-	GetFields() string
 	GetFilter() string
 	GetSort() string
-	GetPageNum() int64
-	GetPageSize() int64
-
-	SetTenantId(string)
-	SetFields(string)
-	SetFilter(string)
-	SetSort(string)
-	SetPageNum(int64)
-	SetPageSize(int64)
+	GetPageNum() uint64
+	GetPageSize() uint64
 }
 
 func NewFindPagingQuery() FindPagingQuery {
@@ -50,19 +42,14 @@ func NewFindPagingQuery() FindPagingQuery {
 
 type findPagingQuery struct {
 	TenantId string
-	Fields   string
 	Filter   string
 	Sort     string
-	PageNum  int64
-	PageSize int64
+	PageNum  uint64
+	PageSize uint64
 }
 
 func (q *findPagingQuery) SetTenantId(value string) {
 	q.TenantId = value
-}
-
-func (q *findPagingQuery) SetFields(value string) {
-	q.Fields = value
 }
 
 func (q *findPagingQuery) SetFilter(value string) {
@@ -73,20 +60,16 @@ func (q *findPagingQuery) SetSort(value string) {
 	q.Sort = value
 }
 
-func (q *findPagingQuery) SetPageNum(value int64) {
+func (q *findPagingQuery) SetPageNum(value uint64) {
 	q.PageNum = value
 }
 
-func (q *findPagingQuery) SetPageSize(value int64) {
+func (q *findPagingQuery) SetPageSize(value uint64) {
 	q.PageSize = value
 }
 
 func (q *findPagingQuery) GetTenantId() string {
 	return q.TenantId
-}
-
-func (q *findPagingQuery) GetFields() string {
-	return q.Fields
 }
 
 func (q *findPagingQuery) GetFilter() string {
@@ -97,10 +80,10 @@ func (q *findPagingQuery) GetSort() string {
 	return q.Sort
 }
 
-func (q *findPagingQuery) GetPageNum() int64 {
+func (q *findPagingQuery) GetPageNum() uint64 {
 	return q.PageNum
 }
 
-func (q *findPagingQuery) GetPageSize() int64 {
+func (q *findPagingQuery) GetPageSize() uint64 {
 	return q.PageSize
 }

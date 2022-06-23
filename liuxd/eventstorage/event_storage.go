@@ -27,4 +27,7 @@ type EventStorage interface {
 
 	// SaveSnapshot 保存镜像对象
 	SaveSnapshot(ctx context.Context, req *SaveSnapshotRequest) (*SaveSnapshotResponse, error)
+
+	// GetRelations 获取聚合根关系
+	GetRelations(ctx context.Context, req *GetRelationsRequest) (*GetRelationsResponse, error)
 }
