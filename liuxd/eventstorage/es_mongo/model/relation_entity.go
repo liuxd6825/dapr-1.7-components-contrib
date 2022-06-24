@@ -1,6 +1,9 @@
 package model
 
-import "github.com/liuxd6825/components-contrib/liuxd/common/utils"
+import (
+	"errors"
+	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
+)
 
 type RelationItems map[string]string
 
@@ -37,4 +40,23 @@ func NewRelationEntity(tenantId, aggregateId, aggregateType string, items map[st
 func (r *RelationEntity) AddItem(idName, idValue string) {
 	name := utils.AsMongoName(idName)
 	r.Items[name] = idValue
+}
+
+func (r *RelationEntity) Validate() error {
+	if r == nil {
+		return errors.New("relation is nil")
+	}
+	if len(r.TableName) == 0 {
+		return errors.New("Relation.TableName cannot be empty")
+	}
+	if len(r.TenantId) == 0 {
+		return errors.New("Relation.TenantId cannot be empty")
+	}
+	if len(r.AggregateId) == 0 {
+		return errors.New("Relation.AggregateId cannot be empty")
+	}
+	if len(r.Id) == 0 {
+		return errors.New("Relation.Id cannot be empty")
+	}
+	return nil
 }
