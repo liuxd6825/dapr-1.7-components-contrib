@@ -288,3 +288,7 @@ func (m *MongoDB) getReadConcernObject(cn string) (*readconcern.ReadConcern, err
 
 	return nil, fmt.Errorf("readConcern %s not found", cn)
 }
+
+func (m *MongoDB) GetDatabase() *mongo.Database {
+	return m.database
+}

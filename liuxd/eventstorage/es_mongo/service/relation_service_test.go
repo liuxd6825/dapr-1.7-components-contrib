@@ -22,7 +22,7 @@ func Test_RelationServiceCreate(t *testing.T) {
 	relation.AddItem("CaseId", "caseId")
 	relation.AddItem("TaskId", "taskId")
 	relation.AddItem("UserId", "userId")
-	err = service.Create(ctx.Background(), relation)
+	err = service.Save(ctx.Background(), relation)
 	if err != nil {
 		t.Error(err)
 	}

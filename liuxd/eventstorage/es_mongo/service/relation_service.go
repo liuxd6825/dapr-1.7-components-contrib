@@ -11,8 +11,7 @@ import (
 )
 
 type RelationService interface {
-	Create(ctx context.Context, relation *model.RelationEntity) error
-	Update(ctx context.Context, relation *model.RelationEntity) error
+	Save(ctx context.Context, relation *model.RelationEntity) error
 	FindPaging(ctx context.Context, tableName string, query eventstorage.FindPagingQuery) (*eventstorage.FindPagingResult[*model.RelationEntity], bool, error)
 }
 
@@ -24,6 +23,10 @@ func NewRelationService(db *other.MongoDB) RelationService {
 
 type relationService struct {
 	resp *repository.RelationRepository
+}
+
+func (r *relationService) Save(ctx context.Context, relation *model.RelationEntity) error {
+	return r.resp.Save(ctx, relation)
 }
 
 func (r *relationService) Create(ctx context.Context, relation *model.RelationEntity) error {

@@ -1,6 +1,8 @@
 package eventstorage
 
 import (
+	"encoding/json"
+	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"time"
 )
 
@@ -59,6 +61,7 @@ func NewEvent(tenantId string, aggregateId string, aggregateType string, event E
 		PubsubName:    event.PubsubName,
 		Topic:         event.Topic,
 		Metadata:      event.Metadata,
+		Relations:     event.Relations,
 	}
 	return res, nil
 }
@@ -200,15 +203,15 @@ func (g *GetRelationsRequest) GetPageSize() uint64 {
 }
 
 type GetRelationsResponse struct {
-	Data       []Relation `json:"data"`
-	TotalRows  uint64     `json:"totalRows"`
-	TotalPages uint64     `json:"totalPages"`
-	PageNum    uint64     `json:"pageNum"`
-	PageSize   uint64     `json:"pageSize"`
-	Filter     string     `json:"filter"`
-	Sort       string     `json:"sort"`
-	Error      string     `json:"error"`
-	IsFound    bool       `json:"isFound"`
+	Data       []*Relation `json:"data"`
+	TotalRows  uint64      `json:"totalRows"`
+	TotalPages uint64      `json:"totalPages"`
+	PageNum    uint64      `json:"pageNum"`
+	PageSize   uint64      `json:"pageSize"`
+	Filter     string      `json:"filter"`
+	Sort       string      `json:"sort"`
+	Error      string      `json:"error"`
+	IsFound    bool        `json:"isFound"`
 }
 
 type Relation struct {
@@ -218,4 +221,18 @@ type Relation struct {
 	AggregateId string            `json:"aggregateId"`
 	IsDeleted   bool              `json:"isDeleted"`
 	Items       map[string]string `json:"items"`
+}
+
+func (r *Relation) MarshalJSON() ([]byte, error) {
+	data := make(map[string]interface{})
+	data["id"] = r.Id
+	data["tenantId"] = r.TenantId
+	data["tableName"] = r.TableName
+	data["aggregateId"] = r.AggregateId
+	data["isDeleted"] = r.IsDeleted
+	for k, v := range r.Items {
+		name := utils.AsJsonName(k)
+		data[name] = v
+	}
+	return json.Marshal(data)
 }

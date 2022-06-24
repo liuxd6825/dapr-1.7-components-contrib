@@ -26,7 +26,7 @@ const (
 type BaseRepository[T any] struct {
 	mongodb       *other.MongoDB
 	collection    *mongo.Collection
-	NewEntityList func() *[]T
+	NewEntityList func() interface{}
 }
 
 func (r *BaseRepository[T]) FindPaging(ctx context.Context, collection *mongo.Collection, query eventstorage.FindPagingQuery, opts ...*other.FindOptions) *eventstorage.FindPagingResult[T] {
@@ -51,7 +51,7 @@ func (r *BaseRepository[T]) FindPaging(ctx context.Context, collection *mongo.Co
 		}
 		err = cursor.All(ctx, data)
 		totalRows, err := collection.CountDocuments(ctx, filter)
-		findData := eventstorage.NewFindPagingResult[T](data, uint64(totalRows), query, err)
+		findData := eventstorage.NewFindPagingResult[T](data.(*[]T), uint64(totalRows), query, err)
 		return findData, true, err
 	})
 

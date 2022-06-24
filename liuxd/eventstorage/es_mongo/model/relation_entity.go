@@ -16,7 +16,7 @@ type RelationEntity struct {
 func NewRelationEntity(tenantId, aggregateId, aggregateType string, items map[string]string) *RelationEntity {
 	tableName := utils.AsMongoName(aggregateType)
 	res := &RelationEntity{
-		Id:          NewObjectID(),
+		Id:          aggregateId,
 		TenantId:    tenantId,
 		AggregateId: aggregateId,
 		TableName:   tableName,
@@ -28,6 +28,7 @@ func NewRelationEntity(tenantId, aggregateId, aggregateType string, items map[st
 	}
 	return res
 }
+
 func (r *RelationEntity) AddItem(idName, idValue string) {
 	name := utils.AsMongoName(idName)
 	r.Items[name] = idValue

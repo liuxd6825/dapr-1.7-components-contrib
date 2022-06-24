@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/common/rsql"
+	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -129,46 +130,50 @@ func (m *MongoProcess) OnOrEnd() {
 }
 
 func (m *MongoProcess) OnEquals(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, rsql.GetValue(rValue))
+	m.current.addChildItem(m.asFieldName(name), rsql.GetValue(rValue))
 }
 
 func (m *MongoProcess) OnNotEquals(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, bson.D{{"$ne", rsql.GetValue(rValue)}})
+	m.current.addChildItem(m.asFieldName(name), bson.D{{"$ne", rsql.GetValue(rValue)}})
 }
 
 func (m *MongoProcess) OnLike(name string, value interface{}, rValue rsql.Value) {
 	pattern := fmt.Sprintf("%s", rsql.GetValue(rValue))
-	m.current.addChildItem(name, primitive.Regex{Pattern: pattern, Options: "im"})
+	m.current.addChildItem(m.asFieldName(name), primitive.Regex{Pattern: pattern, Options: "im"})
 }
 
 func (m *MongoProcess) OnNotLike(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, bson.D{{"$lt", rsql.GetValue(rValue)}})
+	m.current.addChildItem(m.asFieldName(name), bson.D{{"$lt", rsql.GetValue(rValue)}})
 }
 
 func (m *MongoProcess) OnGreaterThan(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, bson.D{{"$gt", rsql.GetValue(rValue)}})
+	m.current.addChildItem(m.asFieldName(name), bson.D{{"$gt", rsql.GetValue(rValue)}})
 }
 
 func (m *MongoProcess) OnGreaterThanOrEquals(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, bson.D{{"$gte", rsql.GetValue(rValue)}})
+	m.current.addChildItem(m.asFieldName(name), bson.D{{"$gte", rsql.GetValue(rValue)}})
 }
 
 func (m *MongoProcess) OnLessThan(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, bson.D{{"$lt", rsql.GetValue(rValue)}})
+	m.current.addChildItem(m.asFieldName(name), bson.D{{"$lt", rsql.GetValue(rValue)}})
 }
 
 func (m *MongoProcess) OnLessThanOrEquals(name string, value interface{}, rValue rsql.Value) {
-	m.current.addChildItem(name, bson.D{{"$lte", rsql.GetValue(rValue)}})
+	m.current.addChildItem(m.asFieldName(name), bson.D{{"$lte", rsql.GetValue(rValue)}})
 }
 
 func (m *MongoProcess) OnIn(name string, value interface{}, rValue rsql.Value) {
 	listValue, _ := rValue.(rsql.ListValue)
 	values := rsql.GetValueList(listValue)
-	m.current.addChildItem(name, bson.M{"$in": values})
+	m.current.addChildItem(m.asFieldName(name), bson.M{"$in": values})
 }
 
 func (m *MongoProcess) OnNotIn(name string, value interface{}, rValue rsql.Value) {
 	listValue, _ := rValue.(rsql.ListValue)
 	values := rsql.GetValueList(listValue)
-	m.current.addChildItem(name, bson.M{"$nin": values})
+	m.current.addChildItem(m.asFieldName(name), bson.M{"$nin": values})
+}
+
+func (m *MongoProcess) asFieldName(name string) string {
+	return utils.AsMongoName(name)
 }

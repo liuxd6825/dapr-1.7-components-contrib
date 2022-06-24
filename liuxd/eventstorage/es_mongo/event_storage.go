@@ -185,21 +185,36 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 }
 
 func (s *EventStorage) GetRelations(ctx context.Context, req *eventstorage.GetRelationsRequest) (*eventstorage.GetRelationsResponse, error) {
-	data, _, err := s.relationService.FindPaging(ctx, req.AggregateType, req)
+	findRes, _, err := s.relationService.FindPaging(ctx, req.AggregateType, req)
 	if err != nil {
 		return nil, err
 	}
 	var errMsg string
-	if data.Error != nil {
-		errMsg = data.Error.Error()
+	if findRes.Error != nil {
+		errMsg = findRes.Error.Error()
+	}
+	var relations []*eventstorage.Relation
+	if findRes.Data != nil {
+		for _, item := range *findRes.Data {
+			rel := eventstorage.Relation{
+				Id:          item.Id,
+				TenantId:    item.TenantId,
+				TableName:   item.TableName,
+				AggregateId: item.AggregateId,
+				IsDeleted:   item.IsDeleted,
+				Items:       item.Items,
+			}
+			relations = append(relations, &rel)
+		}
 	}
 	res := &eventstorage.GetRelationsResponse{
-		TotalRows:  uint64(data.TotalRows),
-		TotalPages: uint64(data.TotalPages),
-		PageSize:   uint64(data.PageSize),
-		PageNum:    uint64(data.PageNum),
-		Filter:     data.Filter,
-		Sort:       data.Sort,
+		Data:       relations,
+		TotalRows:  uint64(findRes.TotalRows),
+		TotalPages: uint64(findRes.TotalPages),
+		PageSize:   uint64(findRes.PageSize),
+		PageNum:    uint64(findRes.PageNum),
+		Filter:     findRes.Filter,
+		Sort:       findRes.Sort,
 		Error:      errMsg,
 	}
 	return res, nil
@@ -290,7 +305,7 @@ func (s *EventStorage) saveEvent(ctx context.Context, req *eventstorage.Event, s
 func (s *EventStorage) saveRelations(ctx context.Context, req *eventstorage.Event) error {
 	if req != nil && len(req.Relations) > 0 {
 		relation := model.NewRelationEntity(req.TenantId, req.AggregateId, req.AggregateType, req.Relations)
-		if err := s.relationService.Create(ctx, relation); err != nil {
+		if err := s.relationService.Save(ctx, relation); err != nil {
 			return err
 		}
 	}
