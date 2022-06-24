@@ -23,8 +23,13 @@ func NewRelationEntity(tenantId, aggregateId, aggregateType string, items map[st
 		IsDeleted:   false,
 		Items:       map[string]string{},
 	}
-	for key, value := range items {
-		res.AddItem(key, value)
+	// 添加关系。注意：如果关系值是空，则不添加。
+	if items != nil && len(items) > 0 {
+		for key, value := range items {
+			if len(value) > 0 {
+				res.AddItem(key, value)
+			}
+		}
 	}
 	return res
 }
