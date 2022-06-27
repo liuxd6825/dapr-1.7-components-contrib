@@ -15,8 +15,8 @@ type EventService interface {
 	Create(ctx context.Context, event *model.EventEntity) error
 	Update(ctx context.Context, event *model.EventEntity) error
 	FindById(ctx context.Context, tenantId string, id string) (*model.EventEntity, error)
-	FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]model.EventEntity, error)
-	FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]model.EventEntity, error)
+	FindByAggregateId(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*[]model.EventEntity, error)
+	FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string, sequenceNumber uint64) (*[]model.EventEntity, error)
 	UpdatePublishStatue(ctx context.Context, eventId string, publishStatue eventstorage.PublishStatus) error
 }
 
@@ -56,21 +56,21 @@ func (s *eventService) FindById(ctx context.Context, tenantId string, id string)
 	return s.repos.FindById(ctx, tenantId, id)
 }
 
-func (s *eventService) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]model.EventEntity, error) {
+func (s *eventService) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*[]model.EventEntity, error) {
 	if tenantId == "" {
 		return nil, errors.New("tenantId 不能为空")
 	}
 	if aggregateId == "" {
 		return nil, errors.New("aggregateId 不能为空")
 	}
-	return s.repos.FindByAggregateId(ctx, tenantId, aggregateId)
+	return s.repos.FindByAggregateId(ctx, tenantId, aggregateId, aggregateType)
 }
 
-func (s *eventService) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]model.EventEntity, error) {
+func (s *eventService) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string, sequenceNumber uint64) (*[]model.EventEntity, error) {
 	if tenantId == "" {
 		return nil, errors.New("tenantId 不能为空")
 	}
-	return s.repos.FindBySequenceNumber(ctx, tenantId, aggregateId, sequenceNumber)
+	return s.repos.FindBySequenceNumber(ctx, tenantId, aggregateId, aggregateType, sequenceNumber)
 }
 
 func (s *eventService) UpdatePublishStatue(ctx context.Context, eventId string, publishStatue eventstorage.PublishStatus) error {

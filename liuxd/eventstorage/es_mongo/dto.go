@@ -24,7 +24,7 @@ func NewEventDto(event *model.EventEntity) *eventstorage.LoadResponseEventDto {
 	}
 }
 
-func NewLoadResponse(tenantId string, aggregateId string, snapshotEntity *model.SnapshotEntity, events *[]model.EventEntity) *eventstorage.LoadResponse {
+func NewLoadResponse(tenantId string, aggregateId string, aggregateType string, snapshotEntity *model.SnapshotEntity, events *[]model.EventEntity) *eventstorage.LoadResponse {
 	var snapshotDto *eventstorage.LoadResponseSnapshotDto = nil
 	if snapshotEntity != nil {
 		snapshotDto = NewSnapshotDto(snapshotEntity)
@@ -38,9 +38,10 @@ func NewLoadResponse(tenantId string, aggregateId string, snapshotEntity *model.
 		}
 	}
 	return &eventstorage.LoadResponse{
-		TenantId:    tenantId,
-		AggregateId: aggregateId,
-		Snapshot:    snapshotDto,
-		Events:      &eventDtos,
+		TenantId:      tenantId,
+		AggregateId:   aggregateId,
+		AggregateType: aggregateType,
+		Snapshot:      snapshotDto,
+		Events:        &eventDtos,
 	}
 }

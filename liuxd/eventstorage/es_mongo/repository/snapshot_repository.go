@@ -54,10 +54,11 @@ func (r *SnapshotRepository) FindByAggregateId(ctx context.Context, tenantId str
 	return &list, nil
 }
 
-func (r *SnapshotRepository) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string) (*model.SnapshotEntity, error) {
+func (r *SnapshotRepository) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.SnapshotEntity, error) {
 	filter := bson.M{
-		TenantIdField:    tenantId,
-		AggregateIdField: aggregateId,
+		TenantIdField:      tenantId,
+		AggregateIdField:   aggregateId,
+		AggregateTypeField: aggregateType,
 	}
 	findOptions := options.FindOne().SetSort(bson.D{{SequenceNumberField, -1}})
 	var snapshot model.SnapshotEntity
