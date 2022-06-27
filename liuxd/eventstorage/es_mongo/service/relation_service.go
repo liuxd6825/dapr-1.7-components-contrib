@@ -26,14 +26,23 @@ type relationService struct {
 }
 
 func (r *relationService) Save(ctx context.Context, relation *model.RelationEntity) error {
+	if err := relation.Validate(); err != nil {
+		return err
+	}
 	return r.resp.Save(ctx, relation)
 }
 
 func (r *relationService) Create(ctx context.Context, relation *model.RelationEntity) error {
+	if err := relation.Validate(); err != nil {
+		return err
+	}
 	return r.resp.InsertOne(ctx, relation)
 }
 
 func (r *relationService) Update(ctx context.Context, relation *model.RelationEntity) error {
+	if err := relation.Validate(); err != nil {
+		return err
+	}
 	return r.resp.UpdateOne(ctx, relation)
 }
 

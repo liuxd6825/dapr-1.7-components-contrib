@@ -70,18 +70,18 @@ func (s *EventStorage) Init(metadata common.Metadata, adapter eventstorage.GetPu
 //
 func (s *EventStorage) LoadEvent(ctx context.Context, req *eventstorage.LoadEventRequest) (*eventstorage.LoadResponse, error) {
 	sequenceNumber := uint64(0)
-	snapshot, err := s.snapshotService.FindByMaxSequenceNumber(ctx, req.TenantId, req.AggregateId)
+	snapshot, err := s.snapshotService.FindByMaxSequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType)
 	if err != nil {
 		return nil, newError("findByMaxSequenceNumber() error taking snapshot.", err)
 	}
 	if snapshot != nil {
 		sequenceNumber = snapshot.SequenceNumber
 	}
-	events, err := s.eventService.FindBySequenceNumber(ctx, req.TenantId, req.AggregateId, sequenceNumber)
+	events, err := s.eventService.FindBySequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType, sequenceNumber)
 	if err != nil {
 		return nil, newError("findBySequenceNumber() error taking events.", err)
 	}
-	resp := NewLoadResponse(req.TenantId, req.AggregateId, snapshot, events)
+	resp := NewLoadResponse(req.TenantId, req.AggregateId, req.AggregateType, snapshot, events)
 	return resp, nil
 }
 

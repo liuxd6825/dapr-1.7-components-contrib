@@ -7,15 +7,17 @@ import (
 )
 
 type LoadEventRequest struct {
-	TenantId    string `json:"tenantId"`
-	AggregateId string `json:"aggregateId"`
+	TenantId      string `json:"tenantId"`
+	AggregateId   string `json:"aggregateId"`
+	AggregateType string `json:"aggregateType"`
 }
 
 type LoadResponse struct {
-	TenantId    string                   `json:"tenantId"`
-	AggregateId string                   `json:"aggregateId"`
-	Snapshot    *LoadResponseSnapshotDto `json:"snapshot"`
-	Events      *[]LoadResponseEventDto  `json:"events"`
+	TenantId      string                   `json:"tenantId"`
+	AggregateId   string                   `json:"aggregateId"`
+	AggregateType string                   `json:"aggregateType"`
+	Snapshot      *LoadResponseSnapshotDto `json:"snapshot"`
+	Events        *[]LoadResponseEventDto  `json:"events"`
 }
 
 type LoadResponseSnapshotDto struct {

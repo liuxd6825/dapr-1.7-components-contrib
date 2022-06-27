@@ -64,10 +64,11 @@ func (r *EventRepository) FindById(ctx context.Context, tenantId string, eventId
 }
 */
 
-func (r *EventRepository) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]model.EventEntity, error) {
+func (r *EventRepository) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*[]model.EventEntity, error) {
 	filter := bson.M{
-		TenantIdField:    tenantId,
-		AggregateIdField: aggregateId,
+		TenantIdField:      tenantId,
+		AggregateIdField:   aggregateId,
+		AggregateTypeField: aggregateType,
 	}
 	return r.findList(ctx, filter)
 }
@@ -92,10 +93,11 @@ func (r *EventRepository) FindNotPublishStatusSuccess(ctx context.Context, tenan
 	return r.findList(ctx, filter)
 }
 
-func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, sequenceNumber uint64) (*[]model.EventEntity, error) {
+func (r *EventRepository) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string, sequenceNumber uint64) (*[]model.EventEntity, error) {
 	filter := bson.M{
 		TenantIdField:       tenantId,
 		AggregateIdField:    aggregateId,
+		AggregateTypeField:  aggregateType,
 		SequenceNumberField: bson.M{"$gt": sequenceNumber},
 	}
 	findOptions := options.Find().SetSort(bson.D{{SequenceNumberField, 1}})

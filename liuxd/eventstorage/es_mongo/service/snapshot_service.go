@@ -13,7 +13,7 @@ type SnapshotService interface {
 	Create(ctx context.Context, snapshot *model.SnapshotEntity) error
 	Update(ctx context.Context, snapshot *model.SnapshotEntity) error
 	FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) (*[]model.SnapshotEntity, error)
-	FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string) (*model.SnapshotEntity, error)
+	FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.SnapshotEntity, error)
 }
 
 func NewSnapshotService(mongodb *other.MongoDB, collection *mongo.Collection) SnapshotService {
@@ -39,6 +39,6 @@ func (s *snapshotService) FindByAggregateId(ctx context.Context, tenantId string
 	return s.repos.FindByAggregateId(ctx, tenantId, aggregateId)
 }
 
-func (s *snapshotService) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string) (*model.SnapshotEntity, error) {
-	return s.repos.FindByMaxSequenceNumber(ctx, tenantId, aggregateId)
+func (s *snapshotService) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.SnapshotEntity, error) {
+	return s.repos.FindByMaxSequenceNumber(ctx, tenantId, aggregateId, aggregateType)
 }
