@@ -112,11 +112,12 @@ func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.Create
 	}
 
 	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, agg.SequenceNumber)
-	if err := NotDuplicateKeyError(err); err != nil {
+	isDuplicateEvent := false
+	if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
 		return nil, err
 	}
 
-	return &eventstorage.CreateEventResponse{}, nil
+	return &eventstorage.CreateEventResponse{IsDuplicateEvent: isDuplicateEvent}, nil
 }
 
 //
@@ -139,17 +140,18 @@ func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.Delete
 	if agg.Deleted {
 		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
 	}
-	
+
 	if err := s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
 		return nil, err
 	}
 	events := []eventstorage.EventDto{*req.Event}
 
 	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber)
-	if err := NotDuplicateKeyError(err); err != nil {
+	isDuplicateEvent := false
+	if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
 		return nil, err
 	}
-	return &eventstorage.DeleteEventResponse{}, nil
+	return &eventstorage.DeleteEventResponse{IsDuplicateEvent: isDuplicateEvent}, nil
 }
 
 //
@@ -181,10 +183,11 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 	}
 
 	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, sequenceNumber)
-	if err := NotDuplicateKeyError(err); err != nil {
+	isDuplicateEvent := false
+	if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
 		return nil, err
 	}
-	return &eventstorage.ApplyEventsResponse{}, nil
+	return &eventstorage.ApplyEventsResponse{IsDuplicateEvent: isDuplicateEvent}, nil
 }
 
 func (s *EventStorage) GetRelations(ctx context.Context, req *eventstorage.GetRelationsRequest) (*eventstorage.GetRelationsResponse, error) {
