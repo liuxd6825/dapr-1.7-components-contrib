@@ -112,7 +112,7 @@ func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.Create
 	}
 
 	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, agg.SequenceNumber)
-	if err != nil {
+	if err := NotDuplicateKeyError(err); err != nil {
 		return nil, err
 	}
 
@@ -139,11 +139,14 @@ func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.Delete
 	if agg.Deleted {
 		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
 	}
+	
 	if err := s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
 		return nil, err
 	}
 	events := []eventstorage.EventDto{*req.Event}
-	if err := s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber); err != nil {
+
+	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber)
+	if err := NotDuplicateKeyError(err); err != nil {
 		return nil, err
 	}
 	return &eventstorage.DeleteEventResponse{}, nil
@@ -178,7 +181,7 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 	}
 
 	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, sequenceNumber)
-	if err != nil {
+	if err := NotDuplicateKeyError(err); err != nil {
 		return nil, err
 	}
 	return &eventstorage.ApplyEventsResponse{}, nil
