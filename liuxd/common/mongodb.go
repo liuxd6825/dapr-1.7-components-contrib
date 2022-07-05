@@ -31,6 +31,7 @@ const (
 	id               = "_id"
 	value            = "value"
 	etag             = "_etag"
+	snapshotTrigger  = "snapshotTrigger"
 
 	defaultTimeout      = 5 * time.Second
 	defaultDatabaseName = ""
@@ -54,6 +55,7 @@ type MongoDB struct {
 	metadata          MongoDBMetadata
 	logger            logger.Logger
 	collectionOptions *options.CollectionOptions
+	snapshotTrigger   uint64
 }
 
 type MongoDBMetadata struct {
@@ -108,6 +110,15 @@ func (m *MongoDB) Init(metadata Metadata) error {
 	rc, err := m.getReadConcernObject(meta.readconcern)
 	if err != nil {
 		return fmt.Errorf("error in getting read concern object: %s", err)
+	}
+
+	m.snapshotTrigger = 200
+	if val, ok := metadata.Properties[snapshotTrigger]; ok && val != "" {
+		valInt, err := strconv.ParseUint(val, 10, 32)
+		if err != nil {
+			panic(fmt.Sprintf("%s %s is not uint64", snapshotTrigger, val))
+		}
+		m.snapshotTrigger = valInt
 	}
 
 	m.metadata = *meta
@@ -235,10 +246,9 @@ func (m *MongoDB) getMongoDBMetaData(metadata Metadata) (*MongoDBMetadata, error
 	if val, ok := metadata.Properties[maxPoolSize]; ok && val != "" {
 		size, err := strconv.ParseUint(val, 10, 32)
 		if err != nil {
-			meta.maxPoolSize = size
-		} else {
-			panic(fmt.Sprintf("%s %s is not nint64", maxPoolSize, val))
+			panic(fmt.Sprintf("%s %s is not uint64", maxPoolSize, val))
 		}
+		meta.maxPoolSize = size
 	}
 
 	var err error

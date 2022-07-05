@@ -23,6 +23,7 @@ type EventStorage struct {
 	snapshotService  service.SnapshotService
 	aggregateService service.AggregateService
 	relationService  service.RelationService
+	snapshotCount    uint
 }
 
 // NewMongoEventSourcing 创建
@@ -69,20 +70,28 @@ func (s *EventStorage) Init(metadata common.Metadata, adapter eventstorage.GetPu
 // @return error
 //
 func (s *EventStorage) LoadEvent(ctx context.Context, req *eventstorage.LoadEventRequest) (*eventstorage.LoadResponse, error) {
-	sequenceNumber := uint64(0)
-	snapshot, err := s.snapshotService.FindByMaxSequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType)
-	if err != nil {
-		return nil, newError("findByMaxSequenceNumber() error taking snapshot.", err)
+	res, err := s.do(func() (interface{}, error) {
+		sequenceNumber := uint64(0)
+		snapshot, err := s.snapshotService.FindByMaxSequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType)
+		if err != nil {
+			return nil, newError("findByMaxSequenceNumber() error taking snapshot.", err)
+		}
+		if snapshot != nil {
+			sequenceNumber = snapshot.SequenceNumber
+		}
+		events, err := s.eventService.FindBySequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType, sequenceNumber)
+		if err != nil {
+			return nil, newError("findBySequenceNumber() error taking events.", err)
+		}
+		return NewLoadResponse(req.TenantId, req.AggregateId, req.AggregateType, snapshot, events), err
+	})
+	headers := eventstorage.NewResponseHeaders(eventstorage.ResponseStatusSuccess, err, nil)
+	if res != nil {
+		resp, _ := res.(*eventstorage.LoadResponse)
+		resp.Headers = headers
+		return resp, err
 	}
-	if snapshot != nil {
-		sequenceNumber = snapshot.SequenceNumber
-	}
-	events, err := s.eventService.FindBySequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType, sequenceNumber)
-	if err != nil {
-		return nil, newError("findBySequenceNumber() error taking events.", err)
-	}
-	resp := NewLoadResponse(req.TenantId, req.AggregateId, req.AggregateType, snapshot, events)
-	return resp, nil
+	return &eventstorage.LoadResponse{Headers: headers}, err
 }
 
 //
@@ -95,29 +104,35 @@ func (s *EventStorage) LoadEvent(ctx context.Context, req *eventstorage.LoadEven
 // @return error
 //
 func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.CreateEventRequest) (*eventstorage.CreateEventResponse, error) {
-	agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
-	if err != nil {
-		return nil, err
-	}
-	if agg != nil {
-		return nil, errors.New(fmt.Sprintf("aggregateId \"%s\" already exists", req.AggregateId))
-	}
-
-	agg, err = s.newAggregateEntity(req)
-	if err != nil {
-		return nil, err
-	}
-	if err = s.aggregateService.Create(ctx, agg); err != nil {
-		return nil, err
-	}
-
-	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, agg.SequenceNumber)
 	isDuplicateEvent := false
-	if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
-		return nil, err
-	}
+	_, err := s.do(func() (interface{}, error) {
+		agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
+		if err != nil {
+			return nil, err
+		}
+		if agg != nil {
+			return nil, errors.New(fmt.Sprintf("aggregateId \"%s\" already exists", req.AggregateId))
+		}
 
-	return &eventstorage.CreateEventResponse{IsDuplicateEvent: isDuplicateEvent}, nil
+		agg, err = s.newAggregateEntity(req)
+		if err != nil {
+			return nil, err
+		}
+		if err = s.aggregateService.Create(ctx, agg); err != nil {
+			return nil, err
+		}
+
+		err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, agg.SequenceNumber)
+		if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	})
+	headers := eventstorage.NewResponseHeaders(eventstorage.ResponseStatusSuccess, err, nil)
+	if isDuplicateEvent {
+		headers.Status = eventstorage.ResponseStatusEventDuplicate
+	}
+	return &eventstorage.CreateEventResponse{Headers: headers}, err
 }
 
 //
@@ -130,28 +145,35 @@ func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.Create
 // @return error
 //
 func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.DeleteEventRequest) (*eventstorage.DeleteEventResponse, error) {
-	agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
-	if err != nil {
-		return nil, err
-	}
-	if agg == nil {
-		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
-	}
-	if agg.Deleted {
-		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
-	}
-
-	if err := s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
-		return nil, err
-	}
-	events := []eventstorage.EventDto{*req.Event}
-
-	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber)
 	isDuplicateEvent := false
-	if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
-		return nil, err
+	_, err := s.do(func() (interface{}, error) {
+		agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
+		if err != nil {
+			return nil, err
+		}
+		if agg == nil {
+			return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
+		}
+		if agg.Deleted {
+			return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
+		}
+
+		if err = s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
+			return nil, err
+		}
+		events := []eventstorage.EventDto{*req.Event}
+
+		err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber)
+		if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
+			return nil, err
+		}
+		return nil, nil
+	})
+	headers := eventstorage.NewResponseHeaders(eventstorage.ResponseStatusSuccess, err, nil)
+	if isDuplicateEvent {
+		headers.Status = eventstorage.ResponseStatusEventDuplicate
 	}
-	return &eventstorage.DeleteEventResponse{IsDuplicateEvent: isDuplicateEvent}, nil
+	return &eventstorage.DeleteEventResponse{Headers: headers}, err
 }
 
 //
@@ -164,66 +186,87 @@ func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.Delete
 // @return error
 //
 func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEventsRequest) (*eventstorage.ApplyEventsResponse, error) {
-	if req == nil {
-		return nil, errors.New("request is nil")
-	}
-	length := len(*req.Events)
-	if length == 0 {
-		return nil, errors.New("request.events size 0 ")
-	}
-	agg, sequenceNumber, err := s.aggregateService.NextSequenceNumber(ctx, req.TenantId, req.AggregateId, uint64(length))
-	if err != nil {
-		return nil, err
-	}
-	if agg == nil {
-		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
-	}
-	if agg.Deleted {
-		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is already deleted.", req.AggregateId))
-	}
-
-	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, sequenceNumber)
 	isDuplicateEvent := false
-	if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
+	res, err := s.do(func() (any, error) {
+		if req == nil {
+			return nil, errors.New("request is nil")
+		}
+		length := len(*req.Events)
+		if length == 0 {
+			return nil, errors.New("request.events size 0 ")
+		}
+		agg, sequenceNumber, err := s.aggregateService.NextSequenceNumber(ctx, req.TenantId, req.AggregateId, uint64(length))
+		if err != nil {
+			return nil, err
+		}
+		if agg == nil {
+			return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
+		}
+		if agg.Deleted {
+			return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is already deleted.", req.AggregateId))
+		}
+
+		err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, sequenceNumber)
+		if err, isDuplicateEvent = NotDuplicateKeyError(err); err != nil {
+			return nil, err
+		}
 		return nil, err
+	})
+	headers := eventstorage.NewResponseHeaders(eventstorage.ResponseStatusSuccess, err, nil)
+	if isDuplicateEvent {
+		headers.Status = eventstorage.ResponseStatusEventDuplicate
 	}
-	return &eventstorage.ApplyEventsResponse{IsDuplicateEvent: isDuplicateEvent}, nil
+	if res != nil {
+		resp := res.(*eventstorage.ApplyEventsResponse)
+		resp.Headers = headers
+		return resp, err
+	}
+	return &eventstorage.ApplyEventsResponse{Headers: headers}, err
 }
 
 func (s *EventStorage) GetRelations(ctx context.Context, req *eventstorage.GetRelationsRequest) (*eventstorage.GetRelationsResponse, error) {
-	findRes, _, err := s.relationService.FindPaging(ctx, req.AggregateType, req)
-	if err != nil {
-		return nil, err
-	}
-	var errMsg string
-	if findRes.Error != nil {
-		errMsg = findRes.Error.Error()
-	}
-	var relations []*eventstorage.Relation
-	if findRes.Data != nil {
-		for _, item := range *findRes.Data {
-			rel := eventstorage.Relation{
-				Id:          item.Id,
-				TenantId:    item.TenantId,
-				TableName:   item.TableName,
-				AggregateId: item.AggregateId,
-				IsDeleted:   item.IsDeleted,
-				Items:       item.Items,
-			}
-			relations = append(relations, &rel)
+	res, err := s.do(func() (any, error) {
+		findRes, _, err := s.relationService.FindPaging(ctx, req.AggregateType, req)
+		if err != nil {
+			return nil, err
 		}
+		var errMsg string
+		if findRes.Error != nil {
+			errMsg = findRes.Error.Error()
+		}
+		var relations []*eventstorage.Relation
+		if findRes.Data != nil {
+			for _, item := range *findRes.Data {
+				rel := eventstorage.Relation{
+					Id:          item.Id,
+					TenantId:    item.TenantId,
+					TableName:   item.TableName,
+					AggregateId: item.AggregateId,
+					IsDeleted:   item.IsDeleted,
+					Items:       item.Items,
+				}
+				relations = append(relations, &rel)
+			}
+		}
+		res := &eventstorage.GetRelationsResponse{
+			Data:       relations,
+			TotalRows:  uint64(findRes.TotalRows),
+			TotalPages: uint64(findRes.TotalPages),
+			PageSize:   uint64(findRes.PageSize),
+			PageNum:    uint64(findRes.PageNum),
+			Filter:     findRes.Filter,
+			Sort:       findRes.Sort,
+			Error:      errMsg,
+		}
+		return res, nil
+	})
+	headers := eventstorage.NewResponseHeaders(eventstorage.ResponseStatusSuccess, err, nil)
+	if res != nil {
+		resp, _ := res.(*eventstorage.GetRelationsResponse)
+		resp.Headers = headers
+		return resp, err
 	}
-	res := &eventstorage.GetRelationsResponse{
-		Data:       relations,
-		TotalRows:  uint64(findRes.TotalRows),
-		TotalPages: uint64(findRes.TotalPages),
-		PageSize:   uint64(findRes.PageSize),
-		PageNum:    uint64(findRes.PageNum),
-		Filter:     findRes.Filter,
-		Sort:       findRes.Sort,
-		Error:      errMsg,
-	}
-	return res, nil
+	return &eventstorage.GetRelationsResponse{Headers: headers}, err
 }
 
 func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregateId string, aggregateType string, events *[]eventstorage.EventDto, startSequenceNumber uint64) error {
@@ -266,23 +309,27 @@ func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregat
 // @return error
 //
 func (s *EventStorage) SaveSnapshot(ctx context.Context, req *eventstorage.SaveSnapshotRequest) (*eventstorage.SaveSnapshotResponse, error) {
+	_, err := s.do(func() (interface{}, error) {
+		snapshot := &model.SnapshotEntity{
+			Id:               model.NewObjectID(),
+			TenantId:         req.TenantId,
+			AggregateId:      req.AggregateId,
+			AggregateType:    req.AggregateType,
+			SequenceNumber:   req.SequenceNumber,
+			Metadata:         req.Metadata,
+			AggregateData:    req.AggregateData,
+			AggregateVersion: req.AggregateVersion,
+		}
 
-	snapshot := &model.SnapshotEntity{
-		Id:               model.NewObjectID(),
-		TenantId:         req.TenantId,
-		AggregateId:      req.AggregateId,
-		AggregateType:    req.AggregateType,
-		SequenceNumber:   req.SequenceNumber,
-		Metadata:         req.Metadata,
-		AggregateData:    req.AggregateData,
-		AggregateVersion: req.AggregateVersion,
-	}
+		err := s.snapshotService.Create(ctx, snapshot)
+		if err != nil {
+			return nil, newError("SnapshotService.Create(). error saving snapshot.", err)
+		}
+		return nil, nil
+	})
 
-	err := s.snapshotService.Create(ctx, snapshot)
-	if err != nil {
-		return nil, newError("SnapshotService.Create(). error saving snapshot.", err)
-	}
-	return &eventstorage.SaveSnapshotResponse{}, nil
+	headers := eventstorage.NewResponseHeaders(eventstorage.ResponseStatusSuccess, err, nil)
+	return &eventstorage.SaveSnapshotResponse{Headers: headers}, nil
 }
 
 func (s *EventStorage) saveEvent(ctx context.Context, req *eventstorage.Event, sequenceNumber uint64) error {
@@ -414,4 +461,8 @@ func (s *EventStorage) newAggregateEntity(req *eventstorage.CreateEventRequest) 
 		AggregateType:  req.AggregateType,
 		SequenceNumber: 1,
 	}, nil
+}
+
+func (s *EventStorage) do(fun func() (any, error)) (any, error) {
+	return fun()
 }

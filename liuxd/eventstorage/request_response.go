@@ -13,6 +13,7 @@ type LoadEventRequest struct {
 }
 
 type LoadResponse struct {
+	Headers       *ResponseHeaders         `json:"headers"`
 	TenantId      string                   `json:"tenantId"`
 	AggregateId   string                   `json:"aggregateId"`
 	AggregateType string                   `json:"aggregateType"`
@@ -89,7 +90,7 @@ type ApplyEventsRequest struct {
 }
 
 type ApplyEventsResponse struct {
-	IsDuplicateEvent bool `json:"isDuplicateEvent"`
+	Headers *ResponseHeaders `json:"headers"`
 }
 
 type CreateEventRequest struct {
@@ -100,7 +101,7 @@ type CreateEventRequest struct {
 }
 
 type CreateEventResponse struct {
-	IsDuplicateEvent bool `json:"isDuplicateEvent"`
+	Headers *ResponseHeaders `json:"headers"`
 }
 
 type DeleteEventRequest struct {
@@ -111,7 +112,7 @@ type DeleteEventRequest struct {
 }
 
 type DeleteEventResponse struct {
-	IsDuplicateEvent bool `json:"isDuplicateEvent"`
+	Headers *ResponseHeaders `json:"headers"`
 }
 
 type SaveSnapshotRequest struct {
@@ -125,6 +126,7 @@ type SaveSnapshotRequest struct {
 }
 
 type SaveSnapshotResponse struct {
+	Headers *ResponseHeaders `json:"headers"`
 }
 
 type ExistAggregateRequest struct {
@@ -133,7 +135,8 @@ type ExistAggregateRequest struct {
 }
 
 type ExistAggregateResponse struct {
-	IsExist bool `json:"isExist"`
+	Headers *ResponseHeaders `json:"headers"`
+	IsExist bool             `json:"isExist"`
 }
 
 type CreateEventLogRequest struct {
@@ -147,6 +150,7 @@ type CreateEventLogRequest struct {
 }
 
 type CreateEventLogResponse struct {
+	Headers ResponseHeaders `json:"headers"`
 }
 
 type UpdateEventLogRequest struct {
@@ -208,15 +212,16 @@ func (g *GetRelationsRequest) GetPageSize() uint64 {
 }
 
 type GetRelationsResponse struct {
-	Data       []*Relation `json:"data"`
-	TotalRows  uint64      `json:"totalRows"`
-	TotalPages uint64      `json:"totalPages"`
-	PageNum    uint64      `json:"pageNum"`
-	PageSize   uint64      `json:"pageSize"`
-	Filter     string      `json:"filter"`
-	Sort       string      `json:"sort"`
-	Error      string      `json:"error"`
-	IsFound    bool        `json:"isFound"`
+	Headers    *ResponseHeaders `json:"headers"`
+	Data       []*Relation      `json:"data"`
+	TotalRows  uint64           `json:"totalRows"`
+	TotalPages uint64           `json:"totalPages"`
+	PageNum    uint64           `json:"pageNum"`
+	PageSize   uint64           `json:"pageSize"`
+	Filter     string           `json:"filter"`
+	Sort       string           `json:"sort"`
+	Error      string           `json:"error"`
+	IsFound    bool             `json:"isFound"`
 }
 
 type Relation struct {
