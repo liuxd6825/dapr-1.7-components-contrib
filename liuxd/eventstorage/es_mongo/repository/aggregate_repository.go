@@ -2,10 +2,9 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -14,7 +13,7 @@ type AggregateRepository struct {
 	BaseRepository[*model.AggregateEntity]
 }
 
-func NewAggregateRepository(mongodb *other.MongoDB, collection *mongo.Collection) *AggregateRepository {
+func NewAggregateRepository(mongodb *db.MongoDB, collection *mongo.Collection) *AggregateRepository {
 	res := &AggregateRepository{}
 	res.mongodb = mongodb
 	res.collection = collection
@@ -41,10 +40,20 @@ func (r *AggregateRepository) Insert(ctx context.Context, aggregate *model.Aggre
 	return nil
 }
 
-func (r *AggregateRepository) Delete(ctx context.Context, tenantId, aggregateId string) error {
+//
+// Delete
+// @Description: 设置聚合为删除状态,并更新SequenceNumber
+// @receiver r
+// @param ctx
+// @param tenantId
+// @param aggregateId
+// @return *model.AggregateEntity
+// @return error
+//
+func (r *AggregateRepository) Delete(ctx context.Context, tenantId, aggregateId string) (*model.AggregateEntity, error) {
 	idValue, err := model.ObjectIDFromHex(aggregateId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	filter := bson.M{
 		TenantIdField: tenantId,
@@ -53,17 +62,48 @@ func (r *AggregateRepository) Delete(ctx context.Context, tenantId, aggregateId 
 	update := bson.M{
 		"$set": bson.M{"deleted": true},
 	}
-	_, err = r.collection.UpdateOne(ctx, filter, update)
+	agg, err := r.findOneAndUpdate(ctx, aggregateId, filter, update)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return agg, nil
 }
 
-func (r *AggregateRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, count uint64) (*model.AggregateEntity, uint64, error) {
+func (r *AggregateRepository) DeleteAndNextSequenceNumber(ctx context.Context, tenantId, aggregateId string) (*model.AggregateEntity, error) {
 	idValue, err := model.ObjectIDFromHex(aggregateId)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
+	}
+	filter := bson.M{
+		TenantIdField: tenantId,
+		IdField:       idValue,
+	}
+	update := bson.M{
+		"$set": bson.M{"deleted": true},
+		"$inc": bson.M{SequenceNumberField: 1},
+	}
+	agg, err := r.findOneAndUpdate(ctx, aggregateId, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return agg, nil
+}
+
+//
+// NextSequenceNumber
+// @Description: 获取新的消息序列号
+// @receiver r
+// @param ctx 上下文
+// @param tenantId 租户ID
+// @param aggregateId 聚合根Id
+// @param count 新序列号的数量，单条消息时值为下1，多条消息时值为信息条数。
+// @return *model.AggregateEntity 聚合对象
+// @return error
+//
+func (r *AggregateRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, count uint64) (*model.AggregateEntity, error) {
+	idValue, err := model.ObjectIDFromHex(aggregateId)
+	if err != nil {
+		return nil, err
 	}
 	filter := bson.M{
 		TenantIdField: tenantId,
@@ -72,18 +112,26 @@ func (r *AggregateRepository) NextSequenceNumber(ctx context.Context, tenantId s
 	update := bson.M{
 		"$inc": bson.M{SequenceNumberField: count},
 	}
+	agg, err := r.findOneAndUpdate(ctx, aggregateId, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return agg, nil
+}
+
+func (r *AggregateRepository) findOneAndUpdate(ctx context.Context, aggregateId string, filter, update bson.M) (*model.AggregateEntity, error) {
 	result := r.collection.FindOneAndUpdate(ctx, filter, update)
-	err = result.Err()
+	err := result.Err()
 	if err == mongo.ErrNoDocuments {
-		return nil, 0, errors.New(fmt.Sprintf("aggregate idValue %s does not exist", aggregateId))
+		return nil, fmt.Errorf("aggregate idValue %s does not exist", aggregateId)
 	} else if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 	var aggregate model.AggregateEntity
 	if err := result.Decode(&aggregate); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
-	return &aggregate, aggregate.SequenceNumber + 1, nil
+	return &aggregate, err
 }
 
 func (r *AggregateRepository) findOne(ctx context.Context, filter interface{}) (*model.AggregateEntity, error) {

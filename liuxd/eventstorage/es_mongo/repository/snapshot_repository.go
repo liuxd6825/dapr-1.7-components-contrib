@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,7 +14,7 @@ type SnapshotRepository struct {
 	BaseRepository[*model.SnapshotEntity]
 }
 
-func NewSnapshotRepository(mongodb *other.MongoDB, collection *mongo.Collection) *SnapshotRepository {
+func NewSnapshotRepository(mongodb *db.MongoDB, collection *mongo.Collection) *SnapshotRepository {
 	res := &SnapshotRepository{}
 	res.mongodb = mongodb
 	res.collection = collection

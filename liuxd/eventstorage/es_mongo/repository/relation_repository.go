@@ -4,9 +4,10 @@ import (
 	"context"
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
-	"github.com/orcaman/concurrent-map"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/options"
+	cmap "github.com/orcaman/concurrent-map"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,7 +19,7 @@ type RelationRepository struct {
 	BaseRepository[*model.RelationEntity]
 }
 
-func NewRelationRepository(mongodb *other.MongoDB) *RelationRepository {
+func NewRelationRepository(mongodb *db.MongoDB) *RelationRepository {
 	res := &RelationRepository{}
 	res.mongodb = mongodb
 	res.NewEntityList = func() interface{} {
@@ -71,7 +72,7 @@ func (r *RelationRepository) UpdateOne(ctx context.Context, relation *model.Rela
 	return nil
 }
 
-func (r *RelationRepository) FindPaging(ctx context.Context, tableName string, query eventstorage.FindPagingQuery, opts ...*other.FindOptions) *eventstorage.FindPagingResult[*model.RelationEntity] {
+func (r *RelationRepository) FindPaging(ctx context.Context, tableName string, query eventstorage.FindPagingQuery, opts ...*options.FindOptions) *eventstorage.FindPagingResult[*model.RelationEntity] {
 	coll := r.GetOrCreateCollection(utils.AsMongoName(tableName))
 	return r.BaseRepository.FindPaging(ctx, coll, query, opts...)
 }

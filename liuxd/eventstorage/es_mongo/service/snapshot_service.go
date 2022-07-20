@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -16,7 +16,7 @@ type SnapshotService interface {
 	FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.SnapshotEntity, error)
 }
 
-func NewSnapshotService(mongodb *other.MongoDB, collection *mongo.Collection) SnapshotService {
+func NewSnapshotService(mongodb *db.MongoDB, collection *mongo.Collection) SnapshotService {
 	return &snapshotService{
 		repos: repository.NewSnapshotRepository(mongodb, collection),
 	}

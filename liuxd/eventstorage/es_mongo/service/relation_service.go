@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 
 	//"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
@@ -15,7 +15,7 @@ type RelationService interface {
 	FindPaging(ctx context.Context, tableName string, query eventstorage.FindPagingQuery) (*eventstorage.FindPagingResult[*model.RelationEntity], bool, error)
 }
 
-func NewRelationService(db *other.MongoDB) RelationService {
+func NewRelationService(db *db.MongoDB) RelationService {
 	res := &relationService{}
 	res.resp = repository.NewRelationRepository(db)
 	return res

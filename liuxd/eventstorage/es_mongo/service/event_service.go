@@ -5,8 +5,8 @@ import (
 	"errors"
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/repository"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -20,7 +20,7 @@ type EventService interface {
 	UpdatePublishStatue(ctx context.Context, eventId string, publishStatue eventstorage.PublishStatus) error
 }
 
-func NewEventService(mongodb *other.MongoDB, collection *mongo.Collection) EventService {
+func NewEventService(mongodb *db.MongoDB, collection *mongo.Collection) EventService {
 	return &eventService{repos: repository.NewEventRepository(mongodb, collection)}
 }
 

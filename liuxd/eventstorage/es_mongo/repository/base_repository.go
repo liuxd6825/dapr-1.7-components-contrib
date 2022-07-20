@@ -6,7 +6,8 @@ import (
 	"github.com/liuxd6825/components-contrib/liuxd/common/rsql"
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/other"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -24,12 +25,12 @@ const (
 )
 
 type BaseRepository[T any] struct {
-	mongodb       *other.MongoDB
+	mongodb       *db.MongoDB
 	collection    *mongo.Collection
 	NewEntityList func() interface{}
 }
 
-func (r *BaseRepository[T]) FindPaging(ctx context.Context, collection *mongo.Collection, query eventstorage.FindPagingQuery, opts ...*other.FindOptions) *eventstorage.FindPagingResult[T] {
+func (r *BaseRepository[T]) FindPaging(ctx context.Context, collection *mongo.Collection, query eventstorage.FindPagingQuery, opts ...*options.FindOptions) *eventstorage.FindPagingResult[T] {
 	return r.DoFilter(query.GetTenantId(), query.GetFilter(), func(filter map[string]interface{}) (*eventstorage.FindPagingResult[T], bool, error) {
 		data := r.NewEntityList()
 		findOptions := getFindOptions(opts...)
@@ -138,15 +139,15 @@ func IsErrorMongoNoDocuments(err error) bool {
 	return false
 }
 
-func getFindOptions(opts ...*other.FindOptions) *options.FindOptions {
+func getFindOptions(opts ...*options.FindOptions) *options.FindOptions {
 	opt := MergeFindOptions(opts...)
 	findOneOptions := &options.FindOptions{}
 	findOneOptions.MaxTime = opt.MaxTime
 	return findOneOptions
 }
 
-func MergeFindOptions(opts ...*other.FindOptions) *other.FindOptions {
-	res := &other.FindOptions{}
+func MergeFindOptions(opts ...*options.FindOptions) *options.FindOptions {
+	res := &options.FindOptions{}
 	for _, o := range opts {
 		if o.MaxTime != nil {
 			res.MaxTime = o.MaxTime

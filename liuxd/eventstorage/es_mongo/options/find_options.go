@@ -1,4 +1,4 @@
-package other
+package options
 
 import "time"
 

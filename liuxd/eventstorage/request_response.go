@@ -13,12 +13,12 @@ type LoadEventRequest struct {
 }
 
 type LoadResponse struct {
-	Headers       *ResponseHeaders         `json:"headers"`
 	TenantId      string                   `json:"tenantId"`
 	AggregateId   string                   `json:"aggregateId"`
 	AggregateType string                   `json:"aggregateType"`
 	Snapshot      *LoadResponseSnapshotDto `json:"snapshot"`
 	Events        *[]LoadResponseEventDto  `json:"events"`
+	Headers       *ResponseHeaders         `json:"headers"`
 }
 
 type LoadResponseSnapshotDto struct {
@@ -150,7 +150,7 @@ type CreateEventLogRequest struct {
 }
 
 type CreateEventLogResponse struct {
-	Headers ResponseHeaders `json:"headers"`
+	Headers *ResponseHeaders `json:"headers"`
 }
 
 type UpdateEventLogRequest struct {
@@ -164,6 +164,7 @@ type UpdateEventLogRequest struct {
 }
 
 type UpdateEventLogResponse struct {
+	Headers *ResponseHeaders `json:"headers"`
 }
 
 type GetEventLogByCommandIdRequest struct {
@@ -174,13 +175,14 @@ type GetEventLogByCommandIdRequest struct {
 }
 
 type GetEventLogByCommandIdResponse struct {
-	TenantId  string `json:"tenantId"`
-	PubAppId  string `json:"pubAppId"`
-	SubAppId  string `json:"subAppId"`
-	EventId   string `json:"eventId"`
-	CommandId string `json:"commandId"`
-	Status    bool   `json:"status"`
-	Message   string `json:"message"`
+	Headers   *ResponseHeaders `json:"headers"`
+	TenantId  string           `json:"tenantId"`
+	PubAppId  string           `json:"pubAppId"`
+	SubAppId  string           `json:"subAppId"`
+	EventId   string           `json:"eventId"`
+	CommandId string           `json:"commandId"`
+	Status    bool             `json:"status"`
+	Message   string           `json:"message"`
 }
 
 type GetRelationsRequest struct {
@@ -212,8 +214,8 @@ func (g *GetRelationsRequest) GetPageSize() uint64 {
 }
 
 type GetRelationsResponse struct {
-	Headers    *ResponseHeaders `json:"headers"`
 	Data       []*Relation      `json:"data"`
+	Headers    *ResponseHeaders `json:"headers"`
 	TotalRows  uint64           `json:"totalRows"`
 	TotalPages uint64           `json:"totalPages"`
 	PageNum    uint64           `json:"pageNum"`

@@ -11,9 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package other
-
-// mongodb package is an implementation of StateStore interface to perform operations on store
+package db
 
 import (
 	"github.com/dapr/kit/logger"
@@ -33,17 +31,33 @@ const (
 	defaultAggregateCollectionName = "dapr_aggregate"
 )
 
+type StorageMetadata struct {
+	*common.MongoDBMetadata
+	aggregateCollectionName string
+	eventCollectionName     string
+	snapshotCollectionName  string
+}
+
 // MongoDB is a state store implementation for MongoDB.
 type MongoDB struct {
 	*common.MongoDB
-	StorageMetadata *StorageMetadata
+	storageMetadata *StorageMetadata
 }
 
-type StorageMetadata struct {
-	*common.MongoDBMetadata
-	AggregateCollectionName string
-	EventCollectionName     string
-	SnapshotCollectionName  string
+func (s *StorageMetadata) AggregateCollectionName() string {
+	return s.aggregateCollectionName
+}
+
+func (s *StorageMetadata) EventCollectionName() string {
+	return s.eventCollectionName
+}
+
+func (s *StorageMetadata) SnapshotCollectionName() string {
+	return s.snapshotCollectionName
+}
+
+func (m *MongoDB) StorageMetadata() *StorageMetadata {
+	return m.storageMetadata
 }
 
 // NewMongoDB returns a new MongoDB state store.
@@ -64,25 +78,25 @@ func (m *MongoDB) Init(metadata common.Metadata) error {
 	if err != nil {
 		return err
 	}
-	m.StorageMetadata = storageMetadata
+	m.storageMetadata = storageMetadata
 	return nil
 }
 
 func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*StorageMetadata, error) {
 	meta := StorageMetadata{
 		MongoDBMetadata:         m.MongoDB.GetMetadata(),
-		EventCollectionName:     defaultEventCollectionName,
-		SnapshotCollectionName:  defaultSnapshotCollectionName,
-		AggregateCollectionName: defaultAggregateCollectionName,
+		eventCollectionName:     defaultEventCollectionName,
+		snapshotCollectionName:  defaultSnapshotCollectionName,
+		aggregateCollectionName: defaultAggregateCollectionName,
 	}
 	if val, ok := metadata.Properties[eventCollectionName]; ok && val != "" {
-		meta.EventCollectionName = val
+		meta.eventCollectionName = val
 	}
 	if val, ok := metadata.Properties[snapshotCollectionName]; ok && val != "" {
-		meta.SnapshotCollectionName = val
+		meta.snapshotCollectionName = val
 	}
 	if val, ok := metadata.Properties[aggregateCollectionName]; ok && val != "" {
-		meta.AggregateCollectionName = val
+		meta.aggregateCollectionName = val
 	}
 	return &meta, nil
 }
