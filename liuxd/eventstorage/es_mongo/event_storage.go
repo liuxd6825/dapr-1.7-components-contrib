@@ -8,13 +8,14 @@ import (
 	"github.com/dapr/kit/logger"
 	"github.com/liuxd6825/components-contrib/liuxd/common"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/service"
 	"github.com/liuxd6825/components-contrib/pubsub"
 )
 
 type EventStorage struct {
-	mongodb          *MongoDB
+	mongodb          *db.MongoDB
 	log              logger.Logger
 	metadata         common.Metadata
 	getPubsubAdapter eventstorage.GetPubsubAdapter
@@ -25,7 +26,7 @@ type EventStorage struct {
 
 // NewMongoEventSourcing 创建
 func NewMongoEventSourcing(log logger.Logger) eventstorage.EventStorage {
-	return &EventStorage{log: log, mongodb: NewMongoDB(log)}
+	return &EventStorage{log: log, mongodb: db.NewMongoDB(log)}
 }
 
 //
@@ -43,9 +44,10 @@ func (s *EventStorage) Init(metadata common.Metadata, adapter eventstorage.GetPu
 		return err
 	}
 
-	aggregateCollection := s.mongodb.NewCollection(s.mongodb.storageMetadata.aggregateCollectionName)
-	eventCollection := s.mongodb.NewCollection(s.mongodb.storageMetadata.eventCollectionName)
-	snapshotCollection := s.mongodb.NewCollection(s.mongodb.storageMetadata.snapshotCollectionName)
+	storageMetadata := s.mongodb.StorageMetadata()
+	aggregateCollection := s.mongodb.NewCollection(storageMetadata.AggregateCollectionName())
+	eventCollection := s.mongodb.NewCollection(storageMetadata.EventCollectionName())
+	snapshotCollection := s.mongodb.NewCollection(storageMetadata.SnapshotCollectionName())
 
 	mongoClient := s.mongodb.GetClient()
 
@@ -126,21 +128,22 @@ func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.Create
 // @return error
 //
 func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.DeleteEventRequest) (*eventstorage.DeleteEventResponse, error) {
-	agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
+	/*	agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
+		if err != nil {
+			return nil, err
+		}
+		if agg == nil {
+			return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
+		}
+		if agg.Deleted {
+			return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
+		}*/
+	agg, err := s.aggregateService.DeleteAndNextSequenceNumber(ctx, req.TenantId, req.AggregateId)
 	if err != nil {
 		return nil, err
 	}
-	if agg == nil {
-		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" not found", req.AggregateId))
-	}
-	if agg.Deleted {
-		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is deleted", req.AggregateId))
-	}
-	if err := s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
-		return nil, err
-	}
 	events := []eventstorage.EventDto{*req.Event}
-	if err := s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber); err != nil {
+	if err := s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, &events, agg.SequenceNumber+1); err != nil {
 		return nil, err
 	}
 	return &eventstorage.DeleteEventResponse{}, nil
@@ -163,7 +166,7 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 	if length == 0 {
 		return nil, errors.New("request.events size 0 ")
 	}
-	agg, sequenceNumber, err := s.aggregateService.NextSequenceNumber(ctx, req.TenantId, req.AggregateId, uint64(length))
+	agg, err := s.aggregateService.NextSequenceNumber(ctx, req.TenantId, req.AggregateId, uint64(length))
 	if err != nil {
 		return nil, err
 	}
@@ -174,14 +177,14 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 		return nil, errors.New(fmt.Sprintf("aggregate id \"%s\" is already deleted.", req.AggregateId))
 	}
 
-	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, sequenceNumber)
+	err = s.saveEvents(ctx, req.TenantId, req.AggregateId, req.AggregateType, req.Events, agg.SequenceNumber+1)
 	if err != nil {
 		return nil, err
 	}
 	return &eventstorage.ApplyEventsResponse{}, nil
 }
 
-func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregateId string, aggregateType string, events *[]eventstorage.EventDto, startSequenceNumber uint64) error {
+func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregateId string, aggregateType string, events *[]eventstorage.EventDto, startSn uint64) error {
 	if events == nil {
 		return errors.New("events is nil")
 	}
@@ -203,7 +206,7 @@ func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregat
 	count := uint64(length)
 	for i := uint64(0); i < count; i++ {
 		applyEvent := applyEvents[i]
-		err := s.saveEvent(ctx, applyEvent, startSequenceNumber+i)
+		err := s.saveEvent(ctx, applyEvent, startSn+i)
 		if err != nil {
 			return err
 		}

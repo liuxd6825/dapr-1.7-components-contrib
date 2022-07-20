@@ -6,10 +6,11 @@ type LoadEventRequest struct {
 }
 
 type LoadResponse struct {
-	TenantId    string                   `json:"tenantId"`
-	AggregateId string                   `json:"aggregateId"`
-	Snapshot    *LoadResponseSnapshotDto `json:"snapshot"`
-	Events      *[]LoadResponseEventDto  `json:"events"`
+	TenantId       string                   `json:"tenantId"`
+	AggregateId    string                   `json:"aggregateId"`
+	SequenceNumber uint64                   `json:"sequenceNumber"`
+	Snapshot       *LoadResponseSnapshotDto `json:"snapshot"`
+	Events         *[]LoadResponseEventDto  `json:"events"`
 }
 
 type LoadResponseSnapshotDto struct {

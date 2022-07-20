@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package es_mongo
+package db
 
 // mongodb package is an implementation of StateStore interface to perform operations on store
 
@@ -33,17 +33,33 @@ const (
 	defaultAggregateCollectionName = "dapr_aggregate"
 )
 
-// MongoDB is a state store implementation for MongoDB.
-type MongoDB struct {
-	*common.MongoDB
-	storageMetadata *storageMetadata
-}
-
-type storageMetadata struct {
+type StorageMetadata struct {
 	*common.MongoDBMetadata
 	aggregateCollectionName string
 	eventCollectionName     string
 	snapshotCollectionName  string
+}
+
+func (s *StorageMetadata) AggregateCollectionName() string {
+	return s.aggregateCollectionName
+}
+
+func (s *StorageMetadata) EventCollectionName() string {
+	return s.eventCollectionName
+}
+
+func (s *StorageMetadata) SnapshotCollectionName() string {
+	return s.snapshotCollectionName
+}
+
+// MongoDB is a state store implementation for MongoDB.
+type MongoDB struct {
+	*common.MongoDB
+	storageMetadata *StorageMetadata
+}
+
+func (m *MongoDB) StorageMetadata() *StorageMetadata {
+	return m.storageMetadata
 }
 
 // NewMongoDB returns a new MongoDB state store.
@@ -68,8 +84,8 @@ func (m *MongoDB) Init(metadata common.Metadata) error {
 	return nil
 }
 
-func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*storageMetadata, error) {
-	meta := storageMetadata{
+func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*StorageMetadata, error) {
+	meta := StorageMetadata{
 		MongoDBMetadata:         m.MongoDB.GetMetadata(),
 		eventCollectionName:     defaultEventCollectionName,
 		snapshotCollectionName:  defaultSnapshotCollectionName,
