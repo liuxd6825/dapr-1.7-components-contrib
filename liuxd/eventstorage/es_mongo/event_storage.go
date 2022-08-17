@@ -71,7 +71,7 @@ func (s *EventStorage) Init(metadata common.Metadata, adapter eventstorage.GetPu
 // @return error
 //
 func (s *EventStorage) LoadEvent(ctx context.Context, req *eventstorage.LoadEventRequest) (*eventstorage.LoadResponse, error) {
-	res, err := s.do(func() (interface{}, error) {
+	res, err := s.doSession(ctx, func(ctx context.Context) (interface{}, error) {
 		sequenceNumber := uint64(0)
 		snapshot, err := s.snapshotService.FindByMaxSequenceNumber(ctx, req.TenantId, req.AggregateId, req.AggregateType)
 		if err != nil {
@@ -106,7 +106,7 @@ func (s *EventStorage) LoadEvent(ctx context.Context, req *eventstorage.LoadEven
 //
 func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.CreateEventRequest) (*eventstorage.CreateEventResponse, error) {
 	isDuplicateEvent := false
-	_, err := s.do(func() (interface{}, error) {
+	_, err := s.doSession(ctx, func(ctx context.Context) (interface{}, error) {
 		agg, err := s.aggregateService.FindById(ctx, req.TenantId, req.AggregateId)
 		if err != nil {
 			return nil, err
@@ -147,7 +147,7 @@ func (s *EventStorage) CreateEvent(ctx context.Context, req *eventstorage.Create
 //
 func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.DeleteEventRequest) (*eventstorage.DeleteEventResponse, error) {
 	isDuplicateEvent := false
-	_, err := s.do(func() (interface{}, error) {
+	_, err := s.doSession(ctx, func(ctx context.Context) (interface{}, error) {
 		var err error
 		var agg *model.AggregateEntity
 		if agg, err = s.aggregateService.Delete(ctx, req.TenantId, req.AggregateId); err != nil {
@@ -183,7 +183,7 @@ func (s *EventStorage) DeleteEvent(ctx context.Context, req *eventstorage.Delete
 //
 func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEventsRequest) (*eventstorage.ApplyEventsResponse, error) {
 	isDuplicateEvent := false
-	res, err := s.do(func() (any, error) {
+	res, err := s.doSession(ctx, func(ctx context.Context) (any, error) {
 		if req == nil {
 			return nil, errors.New("request is nil")
 		}
@@ -221,7 +221,7 @@ func (s *EventStorage) ApplyEvent(ctx context.Context, req *eventstorage.ApplyEv
 }
 
 func (s *EventStorage) GetRelations(ctx context.Context, req *eventstorage.GetRelationsRequest) (*eventstorage.GetRelationsResponse, error) {
-	res, err := s.do(func() (any, error) {
+	res, err := s.doSession(ctx, func(ctx context.Context) (any, error) {
 		findRes, _, err := s.relationService.FindPaging(ctx, req.AggregateType, req)
 		if err != nil {
 			return nil, err
@@ -305,7 +305,7 @@ func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregat
 // @return error
 //
 func (s *EventStorage) SaveSnapshot(ctx context.Context, req *eventstorage.SaveSnapshotRequest) (*eventstorage.SaveSnapshotResponse, error) {
-	_, err := s.do(func() (interface{}, error) {
+	_, err := s.doSession(ctx, func(ctx context.Context) (interface{}, error) {
 		snapshot := &model.SnapshotEntity{
 			Id:               model.NewObjectID(),
 			TenantId:         req.TenantId,
@@ -459,6 +459,14 @@ func (s *EventStorage) newAggregateEntity(req *eventstorage.CreateEventRequest) 
 	}, nil
 }
 
-func (s *EventStorage) do(fun func() (any, error)) (any, error) {
-	return fun()
+func (s *EventStorage) doSession(ctx context.Context, fun func(ctx context.Context) (any, error)) (any, error) {
+	session := db.NewSession(s.mongodb.GetClient())
+	var data interface{}
+	var err error
+	err = db.StartSession(ctx, session, func(ctx context.Context) error {
+		data, err = fun(ctx)
+		return err
+	})
+	return data, err
+
 }

@@ -1,7 +1,8 @@
-package repository
+package db
 
 import (
 	"context"
+	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -21,9 +22,11 @@ func NewSession(client *mongo.Client) eventstorage.Session {
 func (r *session) UseTransaction(ctx context.Context, dbFunc eventstorage.SessionFunc) error {
 	return r.client.UseSession(ctx, func(sCtx mongo.SessionContext) (err error) {
 		defer func() {
-			if e := recover(); e != nil {
-				if err1, ok := e.(error); ok {
-					err = err1
+			if e1 := recover(); e1 != nil {
+				if e2, ok := e1.(error); ok {
+					err = e2
+				} else {
+					err = fmt.Errorf("UseTransaction() error: %v ", e1)
 				}
 			}
 		}()
