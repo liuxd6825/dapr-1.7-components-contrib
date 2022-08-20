@@ -2,16 +2,37 @@ package eventstorage
 
 import (
 	"context"
+	"github.com/dapr/kit/logger"
 	"github.com/liuxd6825/components-contrib/liuxd/common"
 	pubsub_adapter "github.com/liuxd6825/dapr/pkg/runtime/pubsub"
 )
 
+type Session interface {
+	UseTransaction(context.Context, SessionFunc) error
+}
+
+type SessionFunc func(ctx context.Context) error
+
 type GetPubsubAdapter func() pubsub_adapter.Adapter
+
+type Options struct {
+	Metadata       common.Metadata
+	PubsubAdapter  GetPubsubAdapter
+	EventRepos     interface{}
+	SnapshotRepos  interface{}
+	AggregateRepos interface{}
+	RelationRepos  interface{}
+	MessageRepos   interface{}
+	SnapshotCount  uint64
+	Session        Session
+}
 
 // EventStorage 领域事件存储接口
 type EventStorage interface {
 	// Init 初始化
-	Init(metadata common.Metadata, getAdapter GetPubsubAdapter) error
+	Init(opts *Options) error
+
+	GetLogger() logger.Logger
 
 	// LoadEvent 加载事件
 	LoadEvent(ctx context.Context, req *LoadEventRequest) (*LoadResponse, error)

@@ -16,19 +16,26 @@ package db
 import (
 	"github.com/dapr/kit/logger"
 	"github.com/liuxd6825/components-contrib/liuxd/common"
+	"strconv"
 )
 
 const (
 	eventCollectionName     = "eventCollectionName"
 	snapshotCollectionName  = "snapshotCollectionName"
 	aggregateCollectionName = "aggregateCollectionName"
+	relationCollectionName  = "relationCollectionName"
+	messageCollectionName   = "messageCollectionName"
+	snapshotCountName       = "snapshotCountName"
 	id                      = "_id"
 	value                   = "value"
 	etag                    = "_etag"
 
-	defaultEventCollectionName     = "dapr_event"
-	defaultSnapshotCollectionName  = "dapr_snapshot"
-	defaultAggregateCollectionName = "dapr_aggregate"
+	defaultEventCollectionName     = "ddd_event"
+	defaultSnapshotCollectionName  = "ddd_snapshot"
+	defaultAggregateCollectionName = "ddd_aggregate"
+	defaultRelationCollectionName  = "ddd_relation"
+	defaultMessageCollectionName   = "ddd_message"
+	defaultSnapshotCount           = 100
 )
 
 type StorageMetadata struct {
@@ -36,10 +43,13 @@ type StorageMetadata struct {
 	aggregateCollectionName string
 	eventCollectionName     string
 	snapshotCollectionName  string
+	relationCollectionName  string
+	messageCollectionName   string
+	snapshotCount           uint64
 }
 
-// MongoDB is a state store implementation for MongoDB.
-type MongoDB struct {
+// MongoDbConfig is a state store implementation for MongoDbConfig.
+type MongoDbConfig struct {
 	*common.MongoDB
 	storageMetadata *StorageMetadata
 }
@@ -56,21 +66,31 @@ func (s *StorageMetadata) SnapshotCollectionName() string {
 	return s.snapshotCollectionName
 }
 
-func (m *MongoDB) StorageMetadata() *StorageMetadata {
+func (s *StorageMetadata) RelationCollectionName() string {
+	return s.relationCollectionName
+}
+
+func (s *StorageMetadata) MessageCollectionName() string {
+	return s.messageCollectionName
+}
+func (s *StorageMetadata) SnapshotCount() uint64 {
+	return s.snapshotCount
+}
+func (m *MongoDbConfig) StorageMetadata() *StorageMetadata {
 	return m.storageMetadata
 }
 
-// NewMongoDB returns a new MongoDB state store.
-func NewMongoDB(logger logger.Logger) *MongoDB {
+// NewMongoDB returns a new MongoDbConfig state store.
+func NewMongoDB(logger logger.Logger) *MongoDbConfig {
 	mdb := common.NewMongoDB(logger)
-	s := &MongoDB{
+	s := &MongoDbConfig{
 		MongoDB: mdb,
 	}
 	return s
 }
 
 // Init establishes connection to the store based on the metadata.
-func (m *MongoDB) Init(metadata common.Metadata) error {
+func (m *MongoDbConfig) Init(metadata common.Metadata) error {
 	if err := m.MongoDB.Init(metadata); err != nil {
 		return err
 	}
@@ -82,12 +102,15 @@ func (m *MongoDB) Init(metadata common.Metadata) error {
 	return nil
 }
 
-func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*StorageMetadata, error) {
+func (m *MongoDbConfig) getStorageMetadata(metadata common.Metadata) (*StorageMetadata, error) {
 	meta := StorageMetadata{
 		MongoDBMetadata:         m.MongoDB.GetMetadata(),
 		eventCollectionName:     defaultEventCollectionName,
 		snapshotCollectionName:  defaultSnapshotCollectionName,
 		aggregateCollectionName: defaultAggregateCollectionName,
+		relationCollectionName:  defaultRelationCollectionName,
+		messageCollectionName:   defaultMessageCollectionName,
+		snapshotCount:           defaultSnapshotCount,
 	}
 	if val, ok := metadata.Properties[eventCollectionName]; ok && val != "" {
 		meta.eventCollectionName = val
@@ -97,6 +120,19 @@ func (m *MongoDB) getStorageMetadata(metadata common.Metadata) (*StorageMetadata
 	}
 	if val, ok := metadata.Properties[aggregateCollectionName]; ok && val != "" {
 		meta.aggregateCollectionName = val
+	}
+	if val, ok := metadata.Properties[relationCollectionName]; ok && val != "" {
+		meta.relationCollectionName = val
+	}
+	if val, ok := metadata.Properties[messageCollectionName]; ok && val != "" {
+		meta.messageCollectionName = val
+	}
+	if val, ok := metadata.Properties[snapshotCountName]; ok && val != "" {
+		count, err := strconv.ParseUint(val, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		meta.snapshotCount = count
 	}
 	return &meta, nil
 }

@@ -1,12 +1,12 @@
 package eventstorage
 
 type OnSuccess[T any] func(data T) error
-type OnSuccessList[T any] func(list *[]T) error
+type OnSuccessList[T any] func(list []T) error
 type OnError func(err error) error
 type OnIsFond func() error
 
 type FindPagingResult[T any] struct {
-	Data       *[]T   `json:"data"`
+	Data       []T    `json:"data"`
 	TotalRows  uint64 `json:"totalRows"`
 	TotalPages uint64 `json:"totalPages"`
 	PageNum    uint64 `json:"pageNum"`
@@ -17,7 +17,7 @@ type FindPagingResult[T any] struct {
 	IsFound    bool   `json:"-"`
 }
 
-func NewFindPagingResult[T any](data *[]T, totalRows uint64, query FindPagingQuery, err error) *FindPagingResult[T] {
+func NewFindPagingResult[T any](data []T, totalRows uint64, query FindPagingQuery, err error) *FindPagingResult[T] {
 	if data != nil && query != nil {
 		return &FindPagingResult[T]{
 			Data:       data,
@@ -67,7 +67,7 @@ func (f *FindPagingResult[T]) GetError() error {
 	return f.Error
 }
 
-func (f *FindPagingResult[T]) GetData() *[]T {
+func (f *FindPagingResult[T]) GetData() []T {
 	return f.Data
 }
 

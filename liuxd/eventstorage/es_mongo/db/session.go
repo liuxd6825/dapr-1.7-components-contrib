@@ -11,10 +11,6 @@ type session struct {
 	client *mongo.Client
 }
 
-func StartSession(ctx context.Context, session eventstorage.Session, dbFunc eventstorage.SessionFunc) error {
-	return session.UseTransaction(ctx, dbFunc)
-}
-
 func NewSession(client *mongo.Client) eventstorage.Session {
 	return &session{client: client}
 }
