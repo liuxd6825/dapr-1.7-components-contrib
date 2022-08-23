@@ -1,16 +1,39 @@
-package eventstorage
+package api
 
 import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/liuxd6825/components-contrib/liuxd/common"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/api"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo"
 	pubsub_adapter "github.com/liuxd6825/components-contrib/pubsub"
 	"github.com/liuxd6825/dapr/pkg/runtime/pubsub"
 	"testing"
 )
+
+func TestEventStorage_FindEvents(t *testing.T) {
+	es, err := newMongoEventSourcing()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	req := &dto.FindEventsRequest{
+		TenantId:      "001",
+		AggregateType: "",
+		Filter:        fmt.Sprintf(`aggregate_id=="%v"`, "inv-20200820-0001"),
+		PageNum:       0,
+		PageSize:      10,
+		IsTotalRows:   false,
+	}
+	resp, err := es.FindEvents(context.Background(), req)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Logf("FindEvents() data.length=%v", len(resp.Data))
+}
 
 func TestEventStorage_DeleteEvent(t *testing.T) {
 	es, err := newMongoEventSourcing()
@@ -61,21 +84,21 @@ func TestEventStorage_DeleteEvent(t *testing.T) {
 
 }
 
-func newLoadEventRequest(aggregateId string) *LoadEventRequest {
-	return &LoadEventRequest{
+func newLoadEventRequest(aggregateId string) *dto.LoadEventRequest {
+	return &dto.LoadEventRequest{
 		TenantId:      "001",
 		AggregateId:   aggregateId,
 		AggregateType: "TEST",
 	}
 }
 
-func newApplyEventRequest(aggregateId string) *ApplyEventsRequest {
-	return &ApplyEventsRequest{
+func newApplyEventRequest(aggregateId string) *dto.ApplyEventsRequest {
+	return &dto.ApplyEventsRequest{
 		TenantId:      "001",
 		AggregateId:   aggregateId,
 		AggregateType: "TEST",
-		Events: &[]EventDto{
-			EventDto{
+		Events: []*dto.EventDto{
+			&dto.EventDto{
 				Metadata:     map[string]string{},
 				CommandId:    uuid.NewString(),
 				EventId:      uuid.NewString(),
@@ -89,13 +112,13 @@ func newApplyEventRequest(aggregateId string) *ApplyEventsRequest {
 	}
 }
 
-func newCreateEventRequest() *CreateEventRequest {
-	return &CreateEventRequest{
+func newCreateEventRequest() *dto.CreateEventRequest {
+	return &dto.CreateEventRequest{
 		TenantId:      "001",
 		AggregateId:   uuid.New().String(),
 		AggregateType: "TEST",
-		Events: &[]EventDto{
-			EventDto{
+		Events: []*dto.EventDto{
+			&dto.EventDto{
 				Metadata:     map[string]string{},
 				CommandId:    uuid.NewString(),
 				EventId:      uuid.NewString(),
@@ -109,12 +132,12 @@ func newCreateEventRequest() *CreateEventRequest {
 	}
 }
 
-func newDeleteEventRequest(aggregateId string) *DeleteEventRequest {
-	return &DeleteEventRequest{
+func newDeleteEventRequest(aggregateId string) *dto.DeleteEventRequest {
+	return &dto.DeleteEventRequest{
 		TenantId:      "001",
 		AggregateId:   aggregateId,
 		AggregateType: "TEST",
-		Event: &EventDto{
+		Event: &dto.EventDto{
 			Metadata:     map[string]string{},
 			CommandId:    uuid.NewString(),
 			EventId:      uuid.NewString(),
@@ -127,7 +150,7 @@ func newDeleteEventRequest(aggregateId string) *DeleteEventRequest {
 	}
 }
 
-func newMongoEventSourcing() (EventStorage, error) {
+func newMongoEventSourcing() (eventstorage.EventStorage, error) {
 	metadata := common.Metadata{
 		Properties: map[string]string{
 			"host":            "192.168.64.8:27018,192.168.64.8:27019,192.168.64.8:27020",
@@ -141,7 +164,7 @@ func newMongoEventSourcing() (EventStorage, error) {
 	adapter := func() pubsub.Adapter {
 		return newAdapter()
 	}
-	es := api.NewEventStorage(nil)
+	es := NewEventStorage(nil)
 	opts, err := es_mongo.NewOptions(nil, metadata, adapter)
 	if err != nil {
 		return nil, err

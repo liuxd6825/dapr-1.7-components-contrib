@@ -8,10 +8,11 @@ import (
 
 type AggregateService interface {
 	Create(ctx context.Context, req *model.Aggregate) error
-	SetIsDelete(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error)
+	DeleteById(ctx context.Context, tenantId, aggregateId string) error
+	SetDeleted(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error)
 	DeleteAndNextSequenceNumber(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error)
 	FindById(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error)
-	NextSequenceNumber(ctx context.Context, tenantId, aggregateId string, count uint64) (*model.Aggregate, bool, error)
+	NextSequenceNumber(ctx context.Context, tenantId, aggregateId string, count uint64) (*model.Aggregate, bool, uint64, error)
 }
 
 func NewAggregateService(repos repository.AggregateRepository) AggregateService {
@@ -22,11 +23,19 @@ type aggregateService struct {
 	repos repository.AggregateRepository
 }
 
-func (c *aggregateService) Create(ctx context.Context, agg *model.Aggregate) error {
-	return c.repos.Create(ctx, agg.TenantId, agg)
+func (c *aggregateService) DeleteById(ctx context.Context, tenantId, aggregateId string) error {
+	return c.repos.DeleteByAggregateId(ctx, tenantId, aggregateId)
 }
 
-func (c *aggregateService) SetIsDelete(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error) {
+func (c *aggregateService) Destroy(ctx context.Context, tenantId, aggregateId string) error {
+	return c.repos.Delete(ctx, tenantId, aggregateId)
+}
+
+func (c *aggregateService) Create(ctx context.Context, agg *model.Aggregate) error {
+	return c.repos.Create(ctx, agg)
+}
+
+func (c *aggregateService) SetDeleted(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error) {
 	return c.repos.UpdateIsDelete(ctx, tenantId, aggregateId)
 }
 
@@ -38,6 +47,6 @@ func (c *aggregateService) FindById(ctx context.Context, tenantId, aggregateId s
 	return c.repos.FindById(ctx, tenantId, aggregateId)
 }
 
-func (c *aggregateService) NextSequenceNumber(ctx context.Context, tenantId, aggregateId string, count uint64) (*model.Aggregate, bool, error) {
+func (c *aggregateService) NextSequenceNumber(ctx context.Context, tenantId, aggregateId string, count uint64) (*model.Aggregate, bool, uint64, error) {
 	return c.repos.NextSequenceNumber(ctx, tenantId, aggregateId, count)
 }

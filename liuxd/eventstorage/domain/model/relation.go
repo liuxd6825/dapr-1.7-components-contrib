@@ -89,10 +89,10 @@ type Relation struct {
 	Items       RelationItems `bson:",inline" json:"items"`
 }
 
-func NewRelationEntity(tenantId, aggregateId, aggregateType string, items map[string]string) *Relation {
+func NewRelationEntity(tenantId, relationId, aggregateId, aggregateType string, items map[string]string) *Relation {
 	tableName := utils.AsMongoName(aggregateType)
 	res := &Relation{
-		Id:          aggregateId,
+		Id:          relationId,
 		TenantId:    tenantId,
 		AggregateId: aggregateId,
 		TableName:   tableName,

@@ -9,17 +9,16 @@ import (
 )
 
 type aggregateRepository struct {
-	dao *Dao[*model.Aggregate]
+	dao *dao[*model.Aggregate]
 }
 
 func NewAggregateRepository(mongodb *db.MongoDbConfig, collName string) repository.AggregateRepository {
-	res := &aggregateRepository{
+	return &aggregateRepository{
 		dao: NewDao[*model.Aggregate](mongodb, collName),
 	}
-	return res
 }
 
-func (r *aggregateRepository) Create(ctx context.Context, tenantId string, v *model.Aggregate) error {
+func (r *aggregateRepository) Create(ctx context.Context, v *model.Aggregate) error {
 	return r.dao.Insert(ctx, v)
 }
 
@@ -27,7 +26,15 @@ func (r *aggregateRepository) Delete(ctx context.Context, tenantId string, id st
 	return r.dao.DeleteById(ctx, tenantId, id)
 }
 
-func (r *aggregateRepository) Update(ctx context.Context, tenantId string, v *model.Aggregate) error {
+func (r *aggregateRepository) DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error {
+	filter := bson.M{
+		TenantIdField:    tenantId,
+		AggregateIdField: aggregateId,
+	}
+	return r.dao.deleteByFilter(ctx, tenantId, filter)
+}
+
+func (r *aggregateRepository) Update(ctx context.Context, v *model.Aggregate) error {
 	return r.dao.Update(ctx, v)
 }
 
@@ -93,7 +100,7 @@ func (r *aggregateRepository) DeleteAndNextSequenceNumber(ctx context.Context, t
 // @return *model.Aggregate 聚合对象
 // @return error
 //
-func (r *aggregateRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, count uint64) (*model.Aggregate, bool, error) {
+func (r *aggregateRepository) NextSequenceNumber(ctx context.Context, tenantId string, aggregateId string, count uint64) (*model.Aggregate, bool, uint64, error) {
 	filter := bson.M{
 		TenantIdField: tenantId,
 		IdField:       aggregateId,
@@ -103,7 +110,10 @@ func (r *aggregateRepository) NextSequenceNumber(ctx context.Context, tenantId s
 	}
 	agg, ok, err := r.dao.findOneAndUpdate(ctx, tenantId, filter, update)
 	if err != nil {
-		return nil, ok, err
+		return nil, ok, 0, err
 	}
-	return agg, ok, nil
+	if !ok {
+		return agg, false, 0, nil
+	}
+	return agg, ok, agg.SequenceNumber + 1, nil
 }

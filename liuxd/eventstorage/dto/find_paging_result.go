@@ -1,4 +1,4 @@
-package eventstorage
+package dto
 
 type OnSuccess[T any] func(data T) error
 type OnSuccessList[T any] func(list []T) error
@@ -6,29 +6,35 @@ type OnError func(err error) error
 type OnIsFond func() error
 
 type FindPagingResult[T any] struct {
-	Data       []T    `json:"data"`
-	TotalRows  uint64 `json:"totalRows"`
-	TotalPages uint64 `json:"totalPages"`
-	PageNum    uint64 `json:"pageNum"`
-	PageSize   uint64 `json:"pageSize"`
-	Filter     string `json:"filter"`
-	Sort       string `json:"sort"`
-	Error      error  `json:"-"`
-	IsFound    bool   `json:"-"`
+	Data        []T    `json:"data"`
+	TotalRows   uint64 `json:"totalRows"`
+	TotalPages  uint64 `json:"totalPages"`
+	PageNum     uint64 `json:"pageNum"`
+	PageSize    uint64 `json:"pageSize"`
+	Filter      string `json:"filter"`
+	Sort        string `json:"sort"`
+	Error       error  `json:"-"`
+	IsFound     bool   `json:"-"`
+	IsTotalRows bool   `json:"isTotalRows"`
 }
 
 func NewFindPagingResult[T any](data []T, totalRows uint64, query FindPagingQuery, err error) *FindPagingResult[T] {
 	if data != nil && query != nil {
-		return &FindPagingResult[T]{
-			Data:       data,
-			TotalRows:  totalRows,
-			TotalPages: getTotalPage(totalRows, query.GetPageSize()),
-			PageNum:    query.GetPageNum(),
-			PageSize:   query.GetPageSize(),
-			Sort:       query.GetSort(),
-			Filter:     query.GetFilter(),
-			IsFound:    totalRows > 0,
-			Error:      err,
+		res := &FindPagingResult[T]{
+			Data:        data,
+			TotalRows:   0,
+			TotalPages:  0,
+			PageNum:     query.GetPageNum(),
+			PageSize:    query.GetPageSize(),
+			Sort:        query.GetSort(),
+			Filter:      query.GetFilter(),
+			IsFound:     len(data) > 0,
+			Error:       err,
+			IsTotalRows: query.GetIsTotalRows(),
+		}
+		if query.GetIsTotalRows() {
+			res.TotalRows = totalRows
+			res.TotalPages = getTotalPage(totalRows, query.GetPageSize())
 		}
 	}
 	return &FindPagingResult[T]{

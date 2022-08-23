@@ -1,4 +1,4 @@
-package eventstorage
+package dto
 
 type ResponseHeaders struct {
 	Values  map[string]string `json:"values"`

@@ -2,16 +2,15 @@ package repository_impl
 
 import (
 	"context"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type eventRepository struct {
-	dao *Dao[*model.Event]
+	dao *dao[*model.Event]
 }
 
 func NewEventRepository(mongodb *db.MongoDbConfig, collName string) repository.EventRepository {
@@ -28,6 +27,14 @@ func (r eventRepository) Delete(ctx context.Context, tenantId string, id string)
 	return r.dao.DeleteById(ctx, tenantId, id)
 }
 
+func (r *eventRepository) DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error {
+	filter := bson.M{
+		TenantIdField:    tenantId,
+		AggregateIdField: aggregateId,
+	}
+	return r.dao.deleteByFilter(ctx, tenantId, filter)
+}
+
 func (r eventRepository) Update(ctx context.Context, tenantId string, v *model.Event) error {
 	return r.dao.Update(ctx, v)
 }
@@ -36,11 +43,8 @@ func (r eventRepository) FindById(ctx context.Context, tenantId string, id strin
 	return r.dao.FindById(ctx, tenantId, id)
 }
 
-func (r *eventRepository) UpdatePublishStatue(ctx context.Context, tenantId string, eventId string, publishStatue eventstorage.PublishStatus) error {
-	filter := bson.M{IdField: eventId, TenantIdField: tenantId}
-	data := bson.D{{"$set", bson.M{PublishStatusField: publishStatue}}}
-	_, err := r.dao.getCollection(tenantId).UpdateOne(ctx, filter, data, options.Update())
-	return err
+func (r *eventRepository) FindPaging(ctx context.Context, query dto.FindPagingQuery) *dto.FindPagingResult[*model.Event] {
+	return r.dao.FindPaging(ctx, query)
 }
 
 func (r *eventRepository) FindByEventId(ctx context.Context, tenantId string, eventId string) (*model.Event, bool, error) {
@@ -57,38 +61,31 @@ func (r *eventRepository) FindByAggregateId(ctx context.Context, tenantId string
 		AggregateIdField:   aggregateId,
 		AggregateTypeField: aggregateType,
 	}
-	return r.dao.findList(ctx, tenantId, filter)
+	return r.dao.findList(ctx, tenantId, filter, nil)
 }
 
 //
-// FindNotPublishStatusSuccess
-// @Description: 查找发送状态不成功的事件
+// FindByGtSequenceNumber
+// @Description: 查找大于SequenceNumber的事件
 // @receiver r
 // @param ctx
 // @param tenantId
 // @param aggregateId
-// @return *[]Event
+// @param aggregateType
+// @param sequenceNumber
+// @return []*model.Event
+// @return bool
 // @return error
 //
-func (r *eventRepository) FindNotPublishStatusSuccess(ctx context.Context, tenantId string, aggregateId string, aggregateType string) ([]*model.Event, bool, error) {
-	filter := bson.M{
-		TenantIdField:      tenantId,
-		AggregateIdField:   aggregateId,
-		AggregateTypeField: aggregateType,
-		PublishStatusField: bson.M{"$ne": eventstorage.PublishStatusSuccess},
-	}
-	return r.dao.findList(ctx, tenantId, filter)
-}
-
-func (r *eventRepository) FindBySequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string, sequenceNumber uint64) ([]*model.Event, bool, error) {
+func (r *eventRepository) FindByGtSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string, sequenceNumber uint64) ([]*model.Event, bool, error) {
 	filter := bson.M{
 		TenantIdField:       tenantId,
 		AggregateIdField:    aggregateId,
 		AggregateTypeField:  aggregateType,
 		SequenceNumberField: bson.M{"$gt": sequenceNumber},
 	}
-	findOptions := options.Find().SetSort(bson.D{{SequenceNumberField, 1}})
-	return r.dao.findList(ctx, tenantId, filter, findOptions)
+	findOptions := NewOptions().SetSort(bson.D{{SequenceNumberField, 1}})
+	return r.dao.findList(ctx, tenantId, filter, nil, findOptions)
 }
 
 /*

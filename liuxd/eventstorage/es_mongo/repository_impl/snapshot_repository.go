@@ -9,7 +9,7 @@ import (
 )
 
 type snapshotRepository struct {
-	dao *Dao[*model.Snapshot]
+	dao *dao[*model.Snapshot]
 }
 
 func NewSnapshotRepository(mongodb *db.MongoDbConfig, collName string) repository.SnapshotRepository {
@@ -26,6 +26,14 @@ func (r *snapshotRepository) Delete(ctx context.Context, tenantId string, id str
 	return r.dao.DeleteById(ctx, tenantId, id)
 }
 
+func (r *snapshotRepository) DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error {
+	filter := bson.M{
+		TenantIdField:    tenantId,
+		AggregateIdField: aggregateId,
+	}
+	return r.dao.deleteByFilter(ctx, tenantId, filter)
+}
+
 func (r *snapshotRepository) Update(ctx context.Context, tenantId string, v *model.Snapshot) error {
 	return r.dao.Update(ctx, v)
 }
@@ -39,7 +47,7 @@ func (r *snapshotRepository) FindByAggregateId(ctx context.Context, tenantId str
 		TenantIdField:    tenantId,
 		AggregateIdField: aggregateId,
 	}
-	return r.dao.findList(ctx, tenantId, filter)
+	return r.dao.findList(ctx, tenantId, filter, nil)
 }
 
 func (r *snapshotRepository) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.Snapshot, bool, error) {
@@ -48,5 +56,6 @@ func (r *snapshotRepository) FindByMaxSequenceNumber(ctx context.Context, tenant
 		AggregateIdField:   aggregateId,
 		AggregateTypeField: aggregateType,
 	}
-	return r.dao.findOne(ctx, tenantId, filter)
+	options := NewOptions().SetSort(bson.D{{SequenceNumberField, -1}})
+	return r.dao.findOne(ctx, tenantId, filter, options)
 }

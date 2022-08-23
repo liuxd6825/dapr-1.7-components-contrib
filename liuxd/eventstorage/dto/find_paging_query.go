@@ -25,7 +25,7 @@
 // boolean    : 'true' | 'false'
 */
 
-package eventstorage
+package dto
 
 type FindPagingQuery interface {
 	GetTenantId() string
@@ -33,6 +33,7 @@ type FindPagingQuery interface {
 	GetSort() string
 	GetPageNum() uint64
 	GetPageSize() uint64
+	GetIsTotalRows() bool
 }
 
 func NewFindPagingQuery() FindPagingQuery {
@@ -41,11 +42,12 @@ func NewFindPagingQuery() FindPagingQuery {
 }
 
 type findPagingQuery struct {
-	TenantId string
-	Filter   string
-	Sort     string
-	PageNum  uint64
-	PageSize uint64
+	TenantId       string
+	Filter         string
+	Sort           string
+	PageNum        uint64
+	PageSize       uint64
+	IsTotalRecords bool
 }
 
 func (q *findPagingQuery) SetTenantId(value string) {
@@ -68,6 +70,10 @@ func (q *findPagingQuery) SetPageSize(value uint64) {
 	q.PageSize = value
 }
 
+func (q *findPagingQuery) SetIsTotalRows(value bool) {
+	q.IsTotalRecords = value
+}
+
 func (q *findPagingQuery) GetTenantId() string {
 	return q.TenantId
 }
@@ -86,4 +92,8 @@ func (q *findPagingQuery) GetPageNum() uint64 {
 
 func (q *findPagingQuery) GetPageSize() uint64 {
 	return q.PageSize
+}
+
+func (q *findPagingQuery) GetIsTotalRows() bool {
+	return q.IsTotalRecords
 }

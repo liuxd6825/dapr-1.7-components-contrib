@@ -6,9 +6,10 @@ import (
 )
 
 type MessageRepository interface {
-	Create(ctx context.Context, tenantId string, v *model.Message) error
+	Create(ctx context.Context, v *model.Message) error
 	Delete(ctx context.Context, tenantId string, id string) error
-	Update(ctx context.Context, tenantId string, v *model.Message) error
+	DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error
+	Update(ctx context.Context, v *model.Message) error
 	FindById(ctx context.Context, tenantId string, id string) (*model.Message, bool, error)
-	FindSendList(ctx context.Context, tenantId string, maxResult int64) ([]*model.Message, bool, error)
+	FindAll(ctx context.Context, limit *int64) ([]*model.Message, bool, error)
 }

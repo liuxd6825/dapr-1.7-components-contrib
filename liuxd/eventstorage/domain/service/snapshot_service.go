@@ -10,6 +10,7 @@ import (
 type SnapshotService interface {
 	Create(ctx context.Context, snapshot *model.Snapshot) error
 	Update(ctx context.Context, snapshot *model.Snapshot) error
+	DeleteByAggregateId(ctx context.Context, tenantId string, aggregateId string) error
 	FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) ([]*model.Snapshot, bool, error)
 	FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.Snapshot, bool, error)
 }
@@ -25,6 +26,10 @@ func NewSnapshotService(repos repository.SnapshotRepository) SnapshotService {
 func (s *snapshotService) Create(ctx context.Context, snapshot *model.Snapshot) error {
 	snapshot.TimeStamp = utils.NewMongoNow()
 	return s.repos.Create(ctx, snapshot.TenantId, snapshot)
+}
+
+func (s *snapshotService) DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error {
+	return s.repos.DeleteByAggregateId(ctx, tenantId, aggregateId)
 }
 
 func (s *snapshotService) Update(ctx context.Context, snapshot *model.Snapshot) error {
