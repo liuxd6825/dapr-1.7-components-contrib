@@ -26,7 +26,7 @@ func (m *messageService) Create(ctx context.Context, msg *model.Message) error {
 }
 
 func (m *messageService) Delete(ctx context.Context, tenantId, id string) error {
-	return m.repos.Delete(ctx, tenantId, id)
+	return m.repos.DeleteById(ctx, tenantId, id)
 }
 
 func (m *messageService) DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error {

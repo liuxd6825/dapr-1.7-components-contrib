@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	ComponentSpecType = "eventstorage.mongodb"
+	ComponentSpecMongo = "eventstorage.mongodb"
 )
 
-func NewOptions(log logger.Logger, metadata common.Metadata, adapter eventstorage.GetPubsubAdapter) (*eventstorage.Options, error) {
+func NewMongoOptions(log logger.Logger, metadata common.Metadata, adapter eventstorage.GetPubsubAdapter) (*eventstorage.Options, error) {
 	mongoConfig := db2.NewMongoDB(log)
 	if err := mongoConfig.Init(metadata); err != nil {
 		return nil, err

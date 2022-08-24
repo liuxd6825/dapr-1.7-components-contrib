@@ -40,7 +40,7 @@ func (r *relationService) Update(ctx context.Context, relation *model.Relation) 
 }
 
 func (r *relationService) Delete(ctx context.Context, tenantId string, id string) error {
-	return r.repos.Delete(ctx, tenantId, id)
+	return r.repos.DeleteById(ctx, tenantId, id)
 }
 
 func (r *relationService) FindById(ctx context.Context, tenantId string, id string) (*model.Relation, bool, error) {

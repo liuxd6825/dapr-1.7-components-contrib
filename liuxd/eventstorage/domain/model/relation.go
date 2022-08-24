@@ -21,7 +21,7 @@ type Relation struct {
 	TableName   string        `bson:"table_name" json:"table_name"`
 	AggregateId string        `bson:"aggregate_id" json:"aggregate_id"`
 	IsDeleted   bool          `bson:"is_deleted" json:"is_deleted"`
-	Items       RelationItems `bson:",inline" json:"items"`
+	Items       RelationItems `bson:",inline" json:"items"  gorm:"type:text;serializer:json"`
 }
 
 func NewRelationEntity(tenantId, relationId, aggregateId, aggregateType string, items map[string]string) *Relation {

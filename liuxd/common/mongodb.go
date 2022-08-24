@@ -22,6 +22,7 @@ const (
 	password         = "password"
 	databaseName     = "databaseName"
 	server           = "server"
+	port             = "port"
 	writeConcern     = "writeConcern"
 	readConcern      = "readConcern"
 	operationTimeout = "operationTimeout"

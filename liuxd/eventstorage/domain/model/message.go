@@ -10,7 +10,7 @@ type Message struct {
 	TenantId    string    `bson:"tenant_id" json:"tenant_id"`
 	EventId     string    `bson:"event_id" json:"event_id"`
 	CreateTime  time.Time `bson:"create_time" json:"create_time"`
-	Event       *Event    `bson:"event" json:"event"`
+	Event       *Event    `bson:"event" json:"event"  gorm:"type:text;serializer:json"`
 }
 
 func (a *Message) GetId() string {

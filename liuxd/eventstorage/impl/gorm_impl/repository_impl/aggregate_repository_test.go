@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/grom_impl/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/gorm_impl/db"
 	"golang.org/x/net/context"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

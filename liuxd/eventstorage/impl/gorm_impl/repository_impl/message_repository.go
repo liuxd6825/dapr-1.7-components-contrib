@@ -20,7 +20,7 @@ type messageRepository struct {
 }
 
 func NewMessageRepository(db *gorm.DB) repository.MessageRepository {
-	_ = db.AutoMigrate(&model.Aggregate{})
+	_ = db.AutoMigrate(&model.Message{})
 	res := &messageRepository{
 		dao: NewDao[*model.Message](db,
 			func() *model.Message { return &model.Message{} },

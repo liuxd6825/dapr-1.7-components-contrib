@@ -28,7 +28,7 @@ func (c *aggregateService) DeleteById(ctx context.Context, tenantId, aggregateId
 }
 
 func (c *aggregateService) Destroy(ctx context.Context, tenantId, aggregateId string) error {
-	return c.repos.Delete(ctx, tenantId, aggregateId)
+	return c.repos.DeleteById(ctx, tenantId, aggregateId)
 }
 
 func (c *aggregateService) Create(ctx context.Context, agg *model.Aggregate) error {

@@ -7,7 +7,7 @@ import (
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/grom_impl/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/gorm_impl/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"

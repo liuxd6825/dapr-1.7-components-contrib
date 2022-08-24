@@ -6,7 +6,7 @@ type EventType struct {
 	TenantId      string                 `bson:"tenant_id" json:"tenant_id"`
 	EventType     string                 `bson:"event_type" json:"event_type"`
 	AggregateType string                 `bson:"aggregate_type" json:"aggregate_type"`
-	Metadata      map[string]interface{} `bson:"metadata" json:"metadata"`
+	Metadata      map[string]interface{} `bson:"metadata" json:"metadata"  gorm:"type:text;serializer:json"`
 	Version       string                 `bson:"version" json:"version"`
 }
 
