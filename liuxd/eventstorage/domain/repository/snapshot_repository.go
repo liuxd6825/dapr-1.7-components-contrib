@@ -7,7 +7,7 @@ import (
 
 type SnapshotRepository interface {
 	Create(ctx context.Context, tenantId string, v *model.Snapshot) error
-	Delete(ctx context.Context, tenantId string, id string) error
+	DeleteById(ctx context.Context, tenantId string, id string) error
 	DeleteByAggregateId(ctx context.Context, tenantId string, aggregateId string) error
 	Update(ctx context.Context, tenantId string, v *model.Snapshot) error
 	FindById(ctx context.Context, tenantId string, id string) (*model.Snapshot, bool, error)

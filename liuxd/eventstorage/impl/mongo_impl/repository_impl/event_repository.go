@@ -5,7 +5,7 @@ import (
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/mongo_impl/db"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -23,7 +23,7 @@ func (r eventRepository) Create(ctx context.Context, tenantId string, v *model.E
 	return r.dao.Insert(ctx, v)
 }
 
-func (r eventRepository) Delete(ctx context.Context, tenantId string, id string) error {
+func (r eventRepository) DeleteById(ctx context.Context, tenantId string, id string) error {
 	return r.dao.DeleteById(ctx, tenantId, id)
 }
 

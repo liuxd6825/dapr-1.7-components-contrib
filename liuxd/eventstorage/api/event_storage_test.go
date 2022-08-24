@@ -7,7 +7,7 @@ import (
 	"github.com/liuxd6825/components-contrib/liuxd/common"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/mongo_impl"
 	pubsub_adapter "github.com/liuxd6825/components-contrib/pubsub"
 	"github.com/liuxd6825/dapr/pkg/runtime/pubsub"
 	"testing"
@@ -165,7 +165,7 @@ func newMongoEventSourcing() (eventstorage.EventStorage, error) {
 		return newAdapter()
 	}
 	es := NewEventStorage(nil)
-	opts, err := es_mongo.NewOptions(nil, metadata, adapter)
+	opts, err := mongo_impl.NewOptions(nil, metadata, adapter)
 	if err != nil {
 		return nil, err
 	}

@@ -7,7 +7,7 @@ import (
 
 type MessageRepository interface {
 	Create(ctx context.Context, v *model.Message) error
-	Delete(ctx context.Context, tenantId string, id string) error
+	DeleteById(ctx context.Context, tenantId string, id string) error
 	DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error
 	Update(ctx context.Context, v *model.Message) error
 	FindById(ctx context.Context, tenantId string, id string) (*model.Message, bool, error)

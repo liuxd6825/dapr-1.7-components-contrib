@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/liuxd6825/components-contrib/liuxd/common"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/mongo_impl/db"
 	"golang.org/x/net/context"
 	"testing"
 )
@@ -28,7 +28,7 @@ func TestAggregateService_Create(t *testing.T) {
 		AggregateType:  "type",
 		SequenceNumber: 1,
 	}
-	err = repos.Create(context.Background(), TenantId, agg)
+	err = repos.Create(context.Background(), agg)
 	if err != nil {
 		t.Error(err)
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/mongo_impl/db"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -29,7 +29,7 @@ func (m *messageRepository) Create(ctx context.Context, v *model.Message) error 
 	return m.dao.Insert(ctx, v, msgOptions)
 }
 
-func (m *messageRepository) Delete(ctx context.Context, tenantId string, id string) error {
+func (m *messageRepository) DeleteById(ctx context.Context, tenantId string, id string) error {
 	return m.dao.DeleteById(ctx, tenantId, id, msgOptions)
 }
 

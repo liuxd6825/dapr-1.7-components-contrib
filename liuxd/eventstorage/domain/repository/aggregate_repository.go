@@ -7,7 +7,7 @@ import (
 
 type AggregateRepository interface {
 	Create(ctx context.Context, v *model.Aggregate) error
-	Delete(ctx context.Context, tenantId string, id string) error
+	DeleteById(ctx context.Context, tenantId string, id string) error
 	DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error
 	Update(ctx context.Context, v *model.Aggregate) error
 	UpdateIsDelete(ctx context.Context, tenantId, aggregateId string) (*model.Aggregate, bool, error)

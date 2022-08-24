@@ -5,7 +5,7 @@ import (
 )
 
 type Message struct {
-	Id          string    `bson:"_id" json:"id"`
+	Id          string    `bson:"_id" json:"id"  gorm:"primaryKey"`
 	AggregateId string    `bson:"aggregate_id" json:"aggregate_id"`
 	TenantId    string    `bson:"tenant_id" json:"tenant_id"`
 	EventId     string    `bson:"event_id" json:"event_id"`
@@ -15,6 +15,10 @@ type Message struct {
 
 func (a *Message) GetId() string {
 	return a.Id
+}
+
+func (a *Message) SetId(v string) {
+	a.Id = v
 }
 
 func (a *Message) GetTenantId() string {

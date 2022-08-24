@@ -13,75 +13,10 @@ const (
 	RelationIsDeleted   = "is_deleted"
 )
 
-/*
-type Relation map[string]interface{}
-
-func (r Relation) SetId(v string) {
-	r[RelationIdField] = v
-}
-
-func (r Relation) GetId() string {
-	return r.GetString(RelationIdField)
-}
-
-func (r Relation) SetTenantId(v string) {
-	r[RelationTenantId] = v
-}
-
-func (r Relation) GetTenantId() string {
-	return r.GetString(RelationTenantId)
-}
-
-func (r Relation) SetTableName(v string) {
-	r[RelationTableName] = v
-}
-
-func (r Relation) GetTableName() string {
-	return r.GetString(RelationTableName)
-}
-
-func (r Relation) SetAggregateId(v string) {
-	r[RelationAggregateId] = v
-}
-
-func (r Relation) GetTableAggregateId() string {
-	return r.GetString(RelationAggregateId)
-}
-
-func (r Relation) SetIsDeleted(v bool) {
-	r[RelationIsDeleted] = v
-}
-
-func (r Relation) GetIsDeleted() bool {
-	return r.GetBool(RelationIsDeleted)
-}
-
-func (r Relation) AddItem(idName, idValue string) {
-	name := utils.AsMongoName(idName)
-	r[name] = idValue
-}
-
-func (r Relation) GetBool(key string) bool {
-	v, ok := r[key]
-	if ok {
-		return v.(bool)
-	}
-	return false
-}
-
-func (r Relation) GetString(key string) string {
-	v, ok := r[key]
-	if ok {
-		return v.(string)
-	}
-	return ""
-}
-*/
-
 type RelationItems map[string]string
 
 type Relation struct {
-	Id          string        `bson:"_id" json:"id"`
+	Id          string        `bson:"_id" json:"id"  gorm:"primaryKey"`
 	TenantId    string        `bson:"tenant_id" json:"tenant_id"`
 	TableName   string        `bson:"table_name" json:"table_name"`
 	AggregateId string        `bson:"aggregate_id" json:"aggregate_id"`
@@ -136,6 +71,10 @@ func (r *Relation) Validate() error {
 
 func (r *Relation) GetId() string {
 	return r.Id
+}
+
+func (r *Relation) SetId(v string) {
+	r.Id = v
 }
 
 func (r *Relation) GetTenantId() string {

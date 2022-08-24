@@ -8,7 +8,7 @@ import (
 
 type EventRepository interface {
 	Create(ctx context.Context, tenantId string, v *model.Event) error
-	Delete(ctx context.Context, tenantId string, id string) error
+	DeleteById(ctx context.Context, tenantId string, id string) error
 	DeleteByAggregateId(ctx context.Context, tenantId string, aggregateId string) error
 	Update(ctx context.Context, tenantId string, v *model.Event) error
 	FindById(ctx context.Context, tenantId string, id string) (*model.Event, bool, error)

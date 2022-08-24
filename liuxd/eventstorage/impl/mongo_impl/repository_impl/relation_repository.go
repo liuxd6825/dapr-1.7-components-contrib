@@ -5,7 +5,7 @@ import (
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/mongo_impl/db"
 	cmap "github.com/orcaman/concurrent-map"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -27,7 +27,7 @@ func (r *relationRepository) Create(ctx context.Context, tenantId string, v *mod
 	return r.dao.Insert(ctx, v)
 }
 
-func (r *relationRepository) Delete(ctx context.Context, tenantId string, id string) error {
+func (r *relationRepository) DeleteById(ctx context.Context, tenantId string, id string) error {
 	return r.dao.DeleteById(ctx, tenantId, id)
 }
 

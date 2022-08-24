@@ -3,7 +3,7 @@ package model
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Snapshot struct {
-	Id               string                 `bson:"_id" json:"id"`
+	Id               string                 `bson:"_id" json:"id"  gorm:"primaryKey"`
 	TenantId         string                 `bson:"tenant_id" json:"tenant_id"`
 	AggregateId      string                 `bson:"aggregate_id" json:"aggregate_id"`
 	AggregateType    string                 `bson:"aggregate_type" json:"aggregate_type"`
@@ -16,6 +16,10 @@ type Snapshot struct {
 
 func (r *Snapshot) GetId() string {
 	return r.Id
+}
+
+func (r *Snapshot) SetId(v string) {
+	r.Id = v
 }
 
 func (r *Snapshot) GetTenantId() string {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
-	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/es_mongo/db"
+	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/impl/mongo_impl/db"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -22,7 +22,7 @@ func (r *snapshotRepository) Create(ctx context.Context, tenantId string, v *mod
 	return r.dao.Insert(ctx, v)
 }
 
-func (r *snapshotRepository) Delete(ctx context.Context, tenantId string, id string) error {
+func (r *snapshotRepository) DeleteById(ctx context.Context, tenantId string, id string) error {
 	return r.dao.DeleteById(ctx, tenantId, id)
 }
 

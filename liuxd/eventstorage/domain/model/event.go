@@ -5,7 +5,7 @@ import (
 )
 
 type Event struct {
-	Id             string                 `bson:"_id" json:"id"`
+	Id             string                 `bson:"_id" json:"id"  gorm:"primaryKey"`
 	TenantId       string                 `bson:"tenant_id" json:"tenant_id"`
 	CommandId      string                 `bson:"command_id" json:"command_id"`
 	EventId        string                 `bson:"event_id" json:"event_id"`
@@ -23,6 +23,10 @@ type Event struct {
 
 func (a *Event) GetId() string {
 	return a.Id
+}
+
+func (a *Event) SetId(v string) {
+	a.Id = v
 }
 
 func (a *Event) GetTenantId() string {

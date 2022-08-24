@@ -8,7 +8,7 @@ import (
 
 type RelationRepository interface {
 	Create(ctx context.Context, tenantId string, v *model.Relation) error
-	Delete(ctx context.Context, tenantId string, id string) error
+	DeleteById(ctx context.Context, tenantId string, id string) error
 	DeleteByAggregateId(ctx context.Context, tenantId string, aggregateId string) error
 	Update(ctx context.Context, tenantId string, v *model.Relation) error
 	FindById(ctx context.Context, tenantId string, id string) (*model.Relation, bool, error)
