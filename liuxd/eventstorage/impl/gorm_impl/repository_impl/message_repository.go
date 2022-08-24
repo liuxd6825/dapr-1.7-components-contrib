@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
-	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gorm"
 )
 
@@ -52,6 +51,7 @@ func (m *messageRepository) FindById(ctx context.Context, tenantId string, id st
 }
 
 func (m *messageRepository) FindAll(ctx context.Context, limit *int64) ([]*model.Message, bool, error) {
-	options := NewOptions().SetDbId(MessageDbId).SetSort(bson.D{{"create_time", 0}})
-	return m.dao.findList(ctx, msgOptions.DbId, nil, limit, options)
+	sort := "create_time asc"
+	options := NewOptions().SetDbId(MessageDbId).SetSort(&sort)
+	return m.dao.findList(ctx, msgOptions.DbId, "", limit, options)
 }

@@ -3,6 +3,7 @@ package repository_impl
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/common/rsql"
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
@@ -27,7 +28,7 @@ const (
 type Options struct {
 	DbId    string
 	MaxTime *time.Duration
-	Sort    interface{}
+	Sort    *string
 }
 
 func NewOptions() *Options {
@@ -43,8 +44,8 @@ func (o *Options) GetDbId() string {
 	return o.DbId
 }
 
-func (o *Options) SetSort(d bson.D) *Options {
-	o.Sort = d
+func (o *Options) SetSort(v *string) *Options {
+	o.Sort = v
 	return o
 }
 
@@ -62,6 +63,9 @@ func (o *Options) Merge(opts ...*Options) *Options {
 		}
 		if item.MaxTime != nil {
 			o.MaxTime = item.MaxTime
+		}
+		if item.Sort != nil {
+			o.Sort = item.Sort
 		}
 	}
 	return o
@@ -117,13 +121,13 @@ func (d *dao[T]) Update(ctx context.Context, v T, opts ...*Options) error {
 }
 
 func (d *dao[T]) UpdateByMap(ctx context.Context, tenantId, id string, data map[string]interface{}, opts ...*Options) error {
-	var v T
+	var v T = d.NewEntity()
 	return d.getDB(ctx).Model(v).Where("tenant_id=? and id=?", tenantId, id).Updates(data).Error
 }
 
 func (d *dao[T]) FindById(ctx context.Context, tenantId string, id string, opts ...*Options) (T, bool, error) {
-	entity := d.NewEntity()
 	var null T
+	entity := d.NewEntity()
 	err := d.getDB(ctx).Where("tenant_id=? and id=?", tenantId, id).First(entity).Error
 	if IsErrRecordNotFound(err) {
 		return null, false, nil
@@ -156,10 +160,10 @@ func (d *dao[T]) findOneAndUpdate(ctx context.Context, tenantId string, id strin
 	return agg, ok, err
 }
 
-func (d *dao[T]) findOne(ctx context.Context, tenantId string, filterMap map[string]interface{}, opts ...*Options) (T, bool, error) {
-	var res T
+func (d *dao[T]) findOne(ctx context.Context, tenantId string, where string, opts ...*Options) (T, bool, error) {
+	res := d.NewEntity()
 	var null T
-	err := d.getDB(ctx).Model(&res).Where("tenant_id=?", tenantId).First(res, filterMap).Error
+	err := d.getDB(ctx).Model(res).Where(where).First(res).Error
 	if IsErrRecordNotFound(err) {
 		return null, false, nil
 	} else if err != nil {
@@ -172,12 +176,12 @@ func (d *dao[T]) deleteByFilter(ctx context.Context, tenantId string, where stri
 	return d.getDB(ctx).Where(where).Delete(d.NewEntity()).Error
 }
 
-func (d *dao[T]) findList(ctx context.Context, tenantId string, filterMap map[string]interface{}, limit *int64, opts ...*Options) ([]T, bool, error) {
+func (d *dao[T]) findList(ctx context.Context, tenantId string, where string, limit *int64, opts ...*Options) ([]T, bool, error) {
 	opt := NewOptions().SetDbId(tenantId).Merge(opts...)
 	findOpts := newFindOptions(opt)
 	findOpts.Limit = limit
 	list := d.NewEntities()
-	tx := d.getDB(ctx).Where("tenant_id=?", tenantId)
+	tx := d.getDB(ctx)
 	var err error
 	if limit != nil {
 		var l int = 0
@@ -185,9 +189,14 @@ func (d *dao[T]) findList(ctx context.Context, tenantId string, filterMap map[st
 		tx = tx.Limit(l)
 	}
 	if opt.Sort != nil {
-		tx = tx.Order(opt.Sort)
+		order := *opt.Sort
+		tx = tx.Order(order)
 	}
-	err = tx.Find(list, filterMap).Error
+	w := "tenant_id=?"
+	if len(where) > 0 {
+		w = fmt.Sprintf("(%v) and tenant_id=?", where)
+	}
+	err = tx.Where(w, tenantId).Find(&list).Error
 	if IsErrRecordNotFound(err) {
 		return list, false, nil
 	} else if err != nil {
@@ -198,7 +207,7 @@ func (d *dao[T]) findList(ctx context.Context, tenantId string, filterMap map[st
 
 func (d *dao[T]) findPaging(ctx context.Context, query dto.FindPagingQuery, opts ...*Options) *dto.FindPagingResult[T] {
 	return d.DoFilter(query.GetTenantId(), query.GetFilter(), func(filter map[string]interface{}) (*dto.FindPagingResult[T], bool, error) {
-		var data []T
+		var data []T = d.NewEntities()
 		opt := NewOptions().SetDbId(query.GetTenantId()).Merge(opts...)
 		findOptions := &options.FindOptions{
 			MaxTime: opt.MaxTime,

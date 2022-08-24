@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/repository"
-	"go.mongodb.org/mongo-driver/bson"
 	"gorm.io/gorm"
 )
 
@@ -45,17 +44,13 @@ func (r *snapshotRepository) FindById(ctx context.Context, tenantId string, id s
 }
 
 func (r *snapshotRepository) FindByAggregateId(ctx context.Context, tenantId string, aggregateId string) ([]*model.Snapshot, bool, error) {
-	filter := map[string]interface{}{
-		"aggregate_id": aggregateId,
-	}
+	filter := fmt.Sprintf(`aggregate_id="%v"`, aggregateId)
 	return r.dao.findList(ctx, tenantId, filter, nil)
 }
 
 func (r *snapshotRepository) FindByMaxSequenceNumber(ctx context.Context, tenantId string, aggregateId string, aggregateType string) (*model.Snapshot, bool, error) {
-	filter := map[string]interface{}{
-		"aggregate_id":   aggregateId,
-		"aggregate_type": aggregateType,
-	}
-	options := NewOptions().SetSort(bson.D{{SequenceNumberField, -1}})
+	filter := fmt.Sprintf(`tenant_id="%v" and aggregate_id="%v" and aggregate_type="%v"`, tenantId, aggregateId, aggregateType)
+	sort := fmt.Sprintf("sequence_number asc")
+	options := NewOptions().SetSort(&sort)
 	return r.dao.findOne(ctx, tenantId, filter, options)
 }
