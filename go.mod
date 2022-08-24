@@ -62,7 +62,7 @@ require (
 	github.com/go-logr/logr v1.2.0 // indirect
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-redis/redis/v8 v8.8.0
-	github.com/go-sql-driver/mysql v1.5.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gocql/gocql v0.0.0-20210515062232-b7ef815b4556
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/mock v1.6.0
@@ -161,6 +161,8 @@ require (
 	github.com/nacos-group/nacos-sdk-go/v2 v2.0.1
 	github.com/orcaman/concurrent-map v1.0.0
 	gopkg.in/couchbase/gocb.v1 v1.6.4
+	gorm.io/driver/mysql v1.3.6
+	gorm.io/gorm v1.23.8
 )
 
 require gopkg.in/couchbaselabs/jsonx.v1 v1.0.1 // indirect
@@ -171,6 +173,8 @@ require (
 	github.com/google/cel-go v0.9.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20211115234752-e816edb12b65 // indirect
