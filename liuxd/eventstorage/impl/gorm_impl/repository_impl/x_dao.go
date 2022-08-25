@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/liuxd6825/components-contrib/liuxd/common/rsql"
 	"github.com/liuxd6825/components-contrib/liuxd/common/utils"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/domain/model"
 	"github.com/liuxd6825/components-contrib/liuxd/eventstorage/dto"
@@ -269,8 +268,8 @@ func (d *dao[T]) NewFilter(tenantId string, filterMap map[string]interface{}) bs
 }
 
 func (d *dao[T]) DoFilter(tenantId, filter string, fun func(sqlWhere string) (*dto.FindPagingResult[T], bool, error)) *dto.FindPagingResult[T] {
-	p := rsql.NewSqlProcess()
-	if err := rsql.ParseProcess(filter, p); err != nil {
+	p := NewSqlProcess()
+	if err := ParseProcess(filter, p); err != nil {
 		return dto.NewFindPagingResultWithError[T](err)
 	}
 	sqlWhere := p.GetFilter(tenantId)

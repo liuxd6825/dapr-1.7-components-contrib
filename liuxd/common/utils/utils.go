@@ -96,6 +96,12 @@ func AsMongoName(s string) string {
 	return res
 }
 
+func AsFieldName(s string) string {
+	res := SnakeString(s)
+	res = strings.Replace(res, "._", ".", -1)
+	return res
+}
+
 func AsJsonName(s string) string {
 	res := CamelString(s)
 	return FirstLower(res)
