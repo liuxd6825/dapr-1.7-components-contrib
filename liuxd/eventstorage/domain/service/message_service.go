@@ -22,6 +22,9 @@ type messageService struct {
 }
 
 func (m *messageService) Create(ctx context.Context, msg *model.Message) error {
+	if msg == nil {
+		return nil
+	}
 	return m.repos.Create(ctx, msg)
 }
 

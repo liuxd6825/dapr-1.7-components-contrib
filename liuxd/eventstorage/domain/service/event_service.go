@@ -28,6 +28,9 @@ type eventService struct {
 }
 
 func (s *eventService) Update(ctx context.Context, event *model.Event) error {
+	if event == nil {
+		return nil
+	}
 	if err := s.validation(event); err != nil {
 		return err
 	}
@@ -35,6 +38,9 @@ func (s *eventService) Update(ctx context.Context, event *model.Event) error {
 }
 
 func (s *eventService) Create(ctx context.Context, event *model.Event) error {
+	if event == nil {
+		return nil
+	}
 	if err := s.validation(event); err != nil {
 		return err
 	}

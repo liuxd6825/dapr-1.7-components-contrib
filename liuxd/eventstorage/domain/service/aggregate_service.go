@@ -32,6 +32,9 @@ func (c *aggregateService) Destroy(ctx context.Context, tenantId, aggregateId st
 }
 
 func (c *aggregateService) Create(ctx context.Context, agg *model.Aggregate) error {
+	if agg == nil {
+		return nil
+	}
 	return c.repos.Create(ctx, agg)
 }
 

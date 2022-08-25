@@ -24,6 +24,9 @@ func NewSnapshotService(repos repository.SnapshotRepository) SnapshotService {
 }
 
 func (s *snapshotService) Create(ctx context.Context, snapshot *model.Snapshot) error {
+	if snapshot == nil {
+		return nil
+	}
 	snapshot.TimeStamp = utils.NewMongoNow()
 	return s.repos.Create(ctx, snapshot.TenantId, snapshot)
 }
@@ -33,6 +36,9 @@ func (s *snapshotService) DeleteByAggregateId(ctx context.Context, tenantId, agg
 }
 
 func (s *snapshotService) Update(ctx context.Context, snapshot *model.Snapshot) error {
+	if snapshot == nil {
+		return nil
+	}
 	return s.repos.Update(ctx, snapshot.TenantId, snapshot)
 }
 
