@@ -31,6 +31,10 @@ func (r *relationRepository) Create(ctx context.Context, tenantId string, v *mod
 	return r.dao.Insert(ctx, v)
 }
 
+func (r *relationRepository) CreateMany(ctx context.Context, tenantId string, vList []*model.Relation) error {
+	return r.dao.InsertMany(ctx, tenantId, vList)
+}
+
 func (r *relationRepository) DeleteById(ctx context.Context, tenantId string, id string) error {
 	return r.dao.DeleteById(ctx, tenantId, id)
 }

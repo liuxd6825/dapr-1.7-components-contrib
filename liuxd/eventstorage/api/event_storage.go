@@ -227,12 +227,14 @@ func (s *EventStorage) FindRelations(ctx context.Context, req *dto.FindRelations
 		if findRes.Data != nil {
 			for _, item := range findRes.Data {
 				rel := dto.Relation{
-					Id:          item.Id,
-					TenantId:    item.TenantId,
-					TableName:   item.TableName,
-					AggregateId: item.AggregateId,
-					IsDeleted:   item.IsDeleted,
-					Items:       item.Items,
+					Id:            item.Id,
+					TenantId:      item.TenantId,
+					TableName:     item.TableName,
+					AggregateId:   item.AggregateId,
+					AggregateType: item.AggregateType,
+					IsDeleted:     item.IsDeleted,
+					RelValue:      item.RelValue,
+					RelName:       item.RelName,
 				}
 				relations = append(relations, &rel)
 			}
@@ -375,9 +377,9 @@ func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregat
 		eventDto := eventDtoList[i]
 
 		event := NewEvent(tenantId, aggregateId, aggregateType, startSequenceNumber+i, eventDto)
-		relation := model.NewRelationEntity(tenantId, event.EventId, aggregateId, aggregateType, eventDto.Relations)
+		relations := model.NewRelations(tenantId, event.EventId, aggregateId, aggregateType, eventDto.Relations)
 
-		err := s.saveEvent(ctx, event, relation)
+		err := s.saveEvent(ctx, event, relations)
 		if err != nil {
 			return err
 		}
@@ -385,14 +387,14 @@ func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregat
 	return nil
 }
 
-func (s *EventStorage) saveEvent(ctx context.Context, event *model.Event, relation *model.Relation) error {
+func (s *EventStorage) saveEvent(ctx context.Context, event *model.Event, relations []*model.Relation) error {
 	// 创建新事件，并设置PublishStatus为Wait
 	if _, err := s.createEvent(ctx, event); err != nil {
 		return newError("createEvent() error saving event.", err)
 	}
 
 	// 通过领域事件，保存聚合关系
-	if err := s.saveRelations(ctx, relation); err != nil {
+	if err := s.saveRelations(ctx, event.TenantId, relations); err != nil {
 		return newError("relationService.Create() error.", err)
 	}
 
@@ -404,8 +406,8 @@ func (s *EventStorage) saveEvent(ctx context.Context, event *model.Event, relati
 	return nil
 }
 
-func (s *EventStorage) saveRelations(ctx context.Context, relation *model.Relation) error {
-	if err := s.relationService.Save(ctx, relation); err != nil {
+func (s *EventStorage) saveRelations(ctx context.Context, tenantId string, relation []*model.Relation) error {
+	if err := s.relationService.CreateMany(ctx, tenantId, relation); err != nil {
 		return newError("relationService.Create() error: ", err)
 	}
 	return nil

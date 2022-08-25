@@ -16,38 +16,36 @@ const (
 type RelationItems map[string]string
 
 type Relation struct {
-	Id          string        `bson:"_id" json:"id"  gorm:"primaryKey"`
-	TenantId    string        `bson:"tenant_id" json:"tenant_id"`
-	TableName   string        `bson:"table_name" json:"table_name"`
-	AggregateId string        `bson:"aggregate_id" json:"aggregate_id"`
-	IsDeleted   bool          `bson:"is_deleted" json:"is_deleted"`
-	Items       RelationItems `bson:",inline" json:"items"  gorm:"type:text;serializer:json"`
+	Id            string `bson:"_id" json:"id"  gorm:"primaryKey"`
+	TenantId      string `bson:"tenant_id" json:"tenant_id"`
+	TableName     string `bson:"table_name" json:"table_name"`
+	AggregateId   string `bson:"aggregate_id" json:"aggregate_id"`
+	AggregateType string `bson:"aggregate_type" json:"aggregate_type"`
+	IsDeleted     bool   `bson:"is_deleted" json:"is_deleted"`
+	RelName       string `bson:"rel_name" json:"rel_name"`
+	RelValue      string `bson:"rel_value" json:"rel_value"`
 }
 
-func NewRelationEntity(tenantId, relationId, aggregateId, aggregateType string, items map[string]string) *Relation {
+func NewRelations(tenantId, relationId, aggregateId, aggregateType string, items map[string]string) []*Relation {
 	tableName := utils.AsMongoName(aggregateType)
-	res := &Relation{
-		Id:          relationId,
-		TenantId:    tenantId,
-		AggregateId: aggregateId,
-		TableName:   tableName,
-		IsDeleted:   false,
-		Items:       map[string]string{},
-	}
-	// 添加关系。注意：如果关系值是空，则不添加。
-	if items != nil && len(items) > 0 {
-		for key, value := range items {
-			if len(value) > 0 {
-				res.AddItem(key, value)
-			}
+	var relations []*Relation
+	for relName, relValue := range items {
+		if len(relValue) == 0 {
+			continue
 		}
+		rel := &Relation{
+			Id:            relationId,
+			TenantId:      tenantId,
+			AggregateId:   aggregateId,
+			AggregateType: aggregateType,
+			TableName:     tableName,
+			IsDeleted:     false,
+			RelName:       relName,
+			RelValue:      relValue,
+		}
+		relations = append(relations, rel)
 	}
-	return res
-}
-
-func (r Relation) AddItem(idName, idValue string) {
-	name := utils.AsMongoName(idName)
-	r.Items[name] = idValue
+	return relations
 }
 
 func (r *Relation) Validate() error {
@@ -62,6 +60,9 @@ func (r *Relation) Validate() error {
 	}
 	if len(r.AggregateId) == 0 {
 		return errors.New("Relation.AggregateId cannot be empty")
+	}
+	if len(r.AggregateType) == 0 {
+		return errors.New("Relation.AggregateType cannot be empty")
 	}
 	if len(r.Id) == 0 {
 		return errors.New("Relation.Id cannot be empty")

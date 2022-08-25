@@ -22,7 +22,7 @@ type Process interface {
 	OnLessThanOrEquals(name string, value interface{}, rValue Value)
 	OnIn(name string, value interface{}, rValue Value)
 	OnNotIn(name string, value interface{}, rValue Value)
-	GetFilter(tenantId string) string
+	GetFilter(tenantId string) interface{}
 }
 
 type process struct {
@@ -96,7 +96,7 @@ func (p *process) OnOrEnd() {
 	p.str = fmt.Sprintf("%s)", p.str)
 }
 
-func (p *process) GetFilter(tenantId string) string {
+func (p *process) GetFilter(tenantId string) interface{} {
 	return p.str
 }
 func (p *process) Print() {

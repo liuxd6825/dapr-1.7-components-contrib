@@ -8,7 +8,7 @@ import (
 )
 
 type RelationService interface {
-	Save(ctx context.Context, relation *model.Relation) error
+	CreateMany(ctx context.Context, tenantId string, relation []*model.Relation) error
 	DeleteByAggregateId(ctx context.Context, tenantId, aggregateId string) error
 	FindPaging(ctx context.Context, query dto.FindPagingQuery) (*dto.FindPagingResult[*model.Relation], bool, error)
 }
@@ -47,11 +47,8 @@ func (r *relationService) FindById(ctx context.Context, tenantId string, id stri
 	return r.repos.FindById(ctx, tenantId, id)
 }
 
-func (r *relationService) Save(ctx context.Context, relation *model.Relation) error {
-	if err := relation.Validate(); err != nil {
-		return err
-	}
-	return r.repos.Create(ctx, relation.TenantId, relation)
+func (r *relationService) CreateMany(ctx context.Context, tenantId string, relations []*model.Relation) error {
+	return r.repos.CreateMany(ctx, tenantId, relations)
 }
 
 func (r *relationService) FindPaging(ctx context.Context, query dto.FindPagingQuery) (*dto.FindPagingResult[*model.Relation], bool, error) {

@@ -302,7 +302,7 @@ func (d *dao[T]) DoFilter(tenantId, filter string, fun func(filter map[string]in
 		return dto.NewFindPagingResultWithError[T](err)
 	}
 	filterData := p.GetFilter(tenantId)
-	data, _, err := fun(filterData)
+	data, _, err := fun(filterData.(map[string]interface{}))
 	if err != nil {
 		if IsErrorMongoNoDocuments(err) {
 			err = nil

@@ -79,7 +79,7 @@ func (m *MongoProcess) init() {
 	m.current = m.item
 }
 
-func (m *MongoProcess) GetFilter(tenantId string) map[string]interface{} {
+func (m *MongoProcess) GetFilter(tenantId string) interface{} {
 	data := make(map[string]interface{})
 	m.item.getValues(data)
 	m1, ok := data[""]

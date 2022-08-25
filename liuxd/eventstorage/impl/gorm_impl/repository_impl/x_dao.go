@@ -274,7 +274,7 @@ func (d *dao[T]) DoFilter(tenantId, filter string, fun func(sqlWhere string) (*d
 		return dto.NewFindPagingResultWithError[T](err)
 	}
 	sqlWhere := p.GetFilter(tenantId)
-	data, _, err := fun(sqlWhere)
+	data, _, err := fun(sqlWhere.(string))
 	if err != nil {
 		if IsErrRecordNotFound(err) {
 			err = nil
