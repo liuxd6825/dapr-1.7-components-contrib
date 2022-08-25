@@ -206,32 +206,39 @@ func (d *dao[T]) findList(ctx context.Context, tenantId string, where string, li
 }
 
 func (d *dao[T]) findPaging(ctx context.Context, query dto.FindPagingQuery, opts ...*Options) *dto.FindPagingResult[T] {
-	return d.DoFilter(query.GetTenantId(), query.GetFilter(), func(filter map[string]interface{}) (*dto.FindPagingResult[T], bool, error) {
+	return d.DoFilter(query.GetTenantId(), query.GetFilter(), func(sqlWhere string) (*dto.FindPagingResult[T], bool, error) {
 		var data []T = d.NewEntities()
-		opt := NewOptions().SetDbId(query.GetTenantId()).Merge(opts...)
-		findOptions := &options.FindOptions{
-			MaxTime: opt.MaxTime,
-		}
-		if query.GetPageSize() > 0 {
-			findOptions.SetLimit(int64(query.GetPageSize()))
-			findOptions.SetSkip(int64(query.GetPageSize() * query.GetPageNum()))
-		}
-		if len(query.GetSort()) > 0 {
-			sort, err := d.getSort(query.GetSort())
-			if err != nil {
-				return nil, false, err
-			}
-			findOptions.SetSort(sort)
+
+		tx := d.getDB(ctx)
+
+		if len(sqlWhere) > 0 {
+			tx = tx.Where(sqlWhere)
 		}
 
-		err := d.getDB(ctx).Where(filter).Limit(int(query.GetPageSize())).Find(data).Error
+		if query.GetPageSize() > 0 {
+			tx = tx.Limit(int(query.GetPageSize()))
+		}
+
+		if query.GetPageNum() > 0 {
+			tx = tx.Offset(int(query.GetPageSize() * query.GetPageNum()))
+		}
+
+		if len(query.GetSort()) > 0 {
+			tx = tx.Order(query.GetSort())
+		}
+
+		err := tx.Find(data).Error
 		if IsErrRecordNotFound(err) {
 			return nil, false, nil
 		}
 
 		var totalRows int64 = -1
 		if query.GetIsTotalRows() {
-			if err := d.getDB(ctx).Where(filter).Count(&totalRows).Error; err != nil {
+			tx := d.getDB(ctx)
+			if len(sqlWhere) > 0 {
+				tx = tx.Where(sqlWhere)
+			}
+			if err := tx.Count(&totalRows).Error; err != nil {
 				return nil, false, err
 			}
 		}
@@ -261,13 +268,13 @@ func (d *dao[T]) NewFilter(tenantId string, filterMap map[string]interface{}) bs
 	return filter
 }
 
-func (d *dao[T]) DoFilter(tenantId, filter string, fun func(filter map[string]interface{}) (*dto.FindPagingResult[T], bool, error)) *dto.FindPagingResult[T] {
-	p := NewMongoProcess()
+func (d *dao[T]) DoFilter(tenantId, filter string, fun func(sqlWhere string) (*dto.FindPagingResult[T], bool, error)) *dto.FindPagingResult[T] {
+	p := rsql.NewSqlProcess()
 	if err := rsql.ParseProcess(filter, p); err != nil {
 		return dto.NewFindPagingResultWithError[T](err)
 	}
-	filterData := p.GetFilter(tenantId)
-	data, _, err := fun(filterData)
+	sqlWhere := p.GetFilter(tenantId)
+	data, _, err := fun(sqlWhere)
 	if err != nil {
 		if IsErrRecordNotFound(err) {
 			err = nil

@@ -22,10 +22,15 @@ type Process interface {
 	OnLessThanOrEquals(name string, value interface{}, rValue Value)
 	OnIn(name string, value interface{}, rValue Value)
 	OnNotIn(name string, value interface{}, rValue Value)
+	GetFilter(tenantId string) string
 }
 
 type process struct {
 	str string
+}
+
+func NewSqlProcess() Process {
+	return &process{}
 }
 
 func (p *process) OnNotEquals(name string, value interface{}, rValue Value) {
@@ -89,6 +94,10 @@ func (p *process) OnOrStart() {
 }
 func (p *process) OnOrEnd() {
 	p.str = fmt.Sprintf("%s)", p.str)
+}
+
+func (p *process) GetFilter(tenantId string) string {
+	return p.str
 }
 func (p *process) Print() {
 	fmt.Print(p.str)
