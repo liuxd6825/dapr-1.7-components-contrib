@@ -227,7 +227,7 @@ func (d *dao[T]) findPaging(ctx context.Context, query dto.FindPagingQuery, opts
 			tx = tx.Order(query.GetSort())
 		}
 
-		err := tx.Find(data).Error
+		err := tx.Find(&data).Error
 		if IsErrRecordNotFound(err) {
 			return nil, false, nil
 		}

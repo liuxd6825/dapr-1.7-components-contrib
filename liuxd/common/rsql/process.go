@@ -216,10 +216,10 @@ func getValue(val Value) interface{} {
 		value = val.(BooleanValue).Value
 		break
 	case StringValue:
-		value = val.(StringValue).Value
+		value = fmt.Sprintf(`"%v"`, val.(StringValue).Value)
 		break
 	case DateTimeValue:
-		value = val.(DateTimeValue).Value
+		value = fmt.Sprintf(`"%v"`, val.(DateTimeValue).Value)
 		break
 	case DoubleValue:
 		value = val.(DoubleValue).Value

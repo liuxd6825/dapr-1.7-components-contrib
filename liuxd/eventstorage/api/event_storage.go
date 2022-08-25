@@ -377,7 +377,7 @@ func (s *EventStorage) saveEvents(ctx context.Context, tenantId string, aggregat
 		eventDto := eventDtoList[i]
 
 		event := NewEvent(tenantId, aggregateId, aggregateType, startSequenceNumber+i, eventDto)
-		relations := model.NewRelations(tenantId, event.EventId, aggregateId, aggregateType, eventDto.Relations)
+		relations := model.NewRelations(tenantId, event.EventId, event.EventType, aggregateId, aggregateType, eventDto.Relations)
 
 		err := s.saveEvent(ctx, event, relations)
 		if err != nil {

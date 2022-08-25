@@ -21,12 +21,14 @@ type Relation struct {
 	TableName     string `bson:"table_name" json:"table_name"`
 	AggregateId   string `bson:"aggregate_id" json:"aggregate_id"`
 	AggregateType string `bson:"aggregate_type" json:"aggregate_type"`
+	EventId       string `bson:"event_id" json:"event_id"`
+	EventType     string `bson:"event_type" json:"event_type"`
 	IsDeleted     bool   `bson:"is_deleted" json:"is_deleted"`
 	RelName       string `bson:"rel_name" json:"rel_name"`
 	RelValue      string `bson:"rel_value" json:"rel_value"`
 }
 
-func NewRelations(tenantId, relationId, aggregateId, aggregateType string, items map[string]string) []*Relation {
+func NewRelations(tenantId, eventId, eventType, aggregateId, aggregateType string, items map[string]string) []*Relation {
 	tableName := utils.AsMongoName(aggregateType)
 	var relations []*Relation
 	for relName, relValue := range items {
@@ -34,10 +36,12 @@ func NewRelations(tenantId, relationId, aggregateId, aggregateType string, items
 			continue
 		}
 		rel := &Relation{
-			Id:            relationId,
+			Id:            NewObjectID(),
 			TenantId:      tenantId,
 			AggregateId:   aggregateId,
 			AggregateType: aggregateType,
+			EventId:       eventId,
+			EventType:     eventType,
 			TableName:     tableName,
 			IsDeleted:     false,
 			RelName:       relName,
